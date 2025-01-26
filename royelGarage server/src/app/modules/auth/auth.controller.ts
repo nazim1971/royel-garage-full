@@ -35,6 +35,7 @@ const loginUser = catchAsync(async (req, res) => {
     message: 'Login successful',
     data: {
       token: accessToken,
+      RToken: refreshToken
     },
   });
 });
@@ -46,7 +47,7 @@ const refreshToken = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Access token is retrieved succesfully!',
+    message: 'Access token is retrieved successfully!',
     data: result,
   });
 });

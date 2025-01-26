@@ -1,13 +1,10 @@
+import MainLayout from "./components/layout/MainLayout"
 
 
 function App() {
 
 
-  return (
-   <>
-   <h1>Hello garage</h1>
-   </>
-  )
+  return <MainLayout/>
 }
 
 export default App
