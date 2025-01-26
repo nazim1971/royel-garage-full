@@ -3,6 +3,8 @@ import { adminPaths } from "../../routes/admin/AdminPaths";
 import { customerPaths } from "../../routes/customer/CustomerPaths";
 import { menuGenerator } from "../../utils/sidebarMenuGeneratoe";
 import { Menu } from "antd";
+import { useAppSelector } from "../../redux/hooks";
+import { selectCurrentUser } from "../../redux/features/auth/authSlice";
 
 const userRole = {
     ADMIN: "admin",

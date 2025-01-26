@@ -1,4 +1,4 @@
-import MainLayout from "../../components/layout/MainLayout";
+import CustomerLayout from "../../components/layout/CustomerLayout";
 import CheckOut from "../../pages/coustomer/CheckOut";
 import Profile from "../../pages/coustomer/Profile";
 import ViewOrder from "../../pages/coustomer/ViewOrder";
@@ -7,7 +7,7 @@ export const customerPaths = [
     {
       name: "Dashboard",
       path: "dashboard",
-      element: <MainLayout />,
+      element: <CustomerLayout />,
     },
     {
       name: "All management",
