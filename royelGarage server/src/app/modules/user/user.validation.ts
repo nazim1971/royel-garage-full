@@ -6,9 +6,7 @@ const userCreationSchema = z.object({
 		.trim()
 		.min(2)
 		.max(20)
-		.refine((value) => /^[A-Z]/.test(value), {
-			message: 'Name must start with a capital letter',
-		}),
+		,
 	email: z.string().email(),
 	password: z
 		.string()

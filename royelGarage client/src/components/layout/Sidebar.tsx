@@ -49,7 +49,7 @@ const userRole = {
             alignItems: "center",
           }}
         >
-          <h1 className="text-center pt-3 text-xl font-semibold" >Nexen University</h1>
+          <h1 style={{ textAlign: 'center' , marginTop: '10px'}} >Royal garage</h1>
         </div>
         <Menu
           theme="dark"

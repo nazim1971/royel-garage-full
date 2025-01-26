@@ -13,7 +13,7 @@ const MainLayout = () => {
   }
   
     return (
-      <Layout className="h-[100%]" >
+      <Layout style={{minHeight: '100vh'}} >
         <Sidebar />
         <Layout>
           <Header style={{ padding: 0 }} >

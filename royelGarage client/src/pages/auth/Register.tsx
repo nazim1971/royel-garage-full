@@ -1,27 +1,31 @@
-import { z } from "zod"
-import { useRegisterMutation } from "../../redux/features/auth/authApi"
-import { useState } from "react"
-import { Button, Form, Input, message } from "antd"
-import Password from "antd/es/input/Password"
-import { TResponse } from "../../types/globel"
+import { z } from "zod";
+import { useRegisterMutation } from "../../redux/features/auth/authApi";
+import { useState } from "react";
+import { Button, Form, Input, message } from "antd";
+import Password from "antd/es/input/Password";
+import { TResponse } from "../../types/globel";
+import { useNavigate } from "react-router";
 
 type TCustomer = {
-  name: string,
-  email: string,
-  password: string
-}
-
+  name: string;
+  email: string;
+  password: string;
+};
 
 const customerSchema = z.object({
-  name: z.string({required_error: "Name is required"}),
-  email: z.string({required_error: "Email is required"}).email({ message: 'Invalid email format' }),
-  password: z.string({required_error: "Password is required"})
-})
+  name: z.string({ required_error: "Name is required" }),
+  email: z
+    .string({ required_error: "Email is required" })
+    .email({ message: "Invalid email format" }),
+  password: z.string({ required_error: "Password is required" }),
+});
 
 const Register = () => {
 
-    const [registerCustomer] = useRegisterMutation();
-    //create a form instance
+  const navigate = useNavigate();
+
+  const [registerCustomer] = useRegisterMutation();
+  //create a form instance
   const [form] = Form.useForm<TCustomer>();
   const [formErrors, setFormErrors] = useState<any>({});
 
@@ -35,14 +39,13 @@ const Register = () => {
       customerSchema.parse(values);
 
       const customerData = {
-       name: values.name,
-       email: values.email,
-       password: values.password
-
+        name: values.name,
+        email: values.email,
+        password: values.password,
       };
 
       //post
-      const res = await registerCustomer(customerData) as TResponse;
+      const res = (await registerCustomer(customerData)) as TResponse;
       console.log("RES", res);
 
       if (res?.error) {
@@ -52,6 +55,7 @@ const Register = () => {
       } else {
         message.success(res.data?.message || "Customer created successfully!");
         //  refetch();
+        navigate('/login')
       }
     } catch (error) {
       console.log("epppp", error);
@@ -68,47 +72,53 @@ const Register = () => {
   };
 
   return (
+   <>
     <Form
-    
-    name="basic"
-    labelCol={{ span: 8 }}
-    wrapperCol={{ span: 16 }}
-    style={{ maxWidth: 600 ,paddingTop: '40px'}}
-    initialValues={{ remember: true }}
-    onFinish={onFinish}
-    autoComplete="off"
-  >
-    <Form.Item<TCustomer>
-      label="Name"
-      name="name"
-      rules={[{ required: true, message: 'Please input your name!' }]}
+      name="basic"
+      labelCol={{ span: 8 }}
+      wrapperCol={{ span: 16 }}
+      style={{ maxWidth: 600, paddingTop: "40px" }}
+      initialValues={{ remember: true }}
+      onFinish={onFinish}
+      autoComplete="off"
     >
-      <Input />
-    </Form.Item>
+      <Form.Item<TCustomer>
+        label="Name"
+        name="name"
+        validateStatus={formErrors.name ? "error" : ""}
+        help={formErrors.name}
+      >
+        <Input />
+      </Form.Item>
 
-    <Form.Item<TCustomer>
-      label="Email"
-      name="email"
-      rules={[{ required: true, message: 'Please input your email!' }]}
-    >
-      <Input />
-    </Form.Item>
+      <Form.Item<TCustomer>
+        label="Email"
+        name="email"
+        validateStatus={formErrors.name ? "error" : ""}
+        help={formErrors.name}
+      >
+        <Input />
+      </Form.Item>
 
-    <Form.Item<TCustomer>
-      label="Password"
-      name="password"
-      rules={[{ required: true, message: 'Please input your password!' }]}
-    >
-      <Input.Password />
-    </Form.Item>
+      <Form.Item<TCustomer>
+        label="Password"
+        name="password"
+        validateStatus={formErrors.name ? "error" : ""}
+        help={formErrors.name}
+      >
+        <Input.Password />
+      </Form.Item>
 
-    <Form.Item label={null}>
-      <Button type="primary" htmlType="submit">
-        Submit
-      </Button>
-    </Form.Item>
-  </Form>
-  )
-}
+      <Form.Item label={null}>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
+      </Form.Item>
+    </Form>
 
-export default Register
+    <Button href="/login"> Login</Button>
+   </>
+  );
+};
+
+export default Register;
