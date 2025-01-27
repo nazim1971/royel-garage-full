@@ -1,8 +1,10 @@
-import { Card, Col, Flex, message, Spin } from "antd";
+import { Button, Card, Col, Flex, message, Spin } from "antd";
 
 import ProductModel from "../../components/modal/Product.model";
 import { useDeleteProductMutation, useGetAllProductQuery } from "../../redux/features/admin/productApi";
 import DeleteModal from "../../components/modal/DeleteModel";
+import { useState } from "react";
+import { TProduct } from "../../types/products.types";
 
 const ManageOrders = () => {
 
@@ -14,6 +16,7 @@ const ManageOrders = () => {
   } = useGetAllProductQuery(undefined);
 
   const [deleteProduct] = useDeleteProductMutation();
+  const [selectedProduct, setSelectedProduct] = useState<TProduct | null>(null);
 
   console.log(products);
   if (isFetching) {
@@ -35,10 +38,14 @@ const ManageOrders = () => {
     }
   };
 
+  const handleEdit = (product) => {
+    setSelectedProduct(product); // Set product to edit
+  };
+
   return (
     <>
       <Flex style={{ paddingBottom: "20px" }}>
-        <ProductModel refetch={refetch} />
+        <ProductModel refetch={refetch} isEditMode={false} />
       </Flex>
       <h1>Hello</h1>
       <Col
@@ -79,7 +86,9 @@ const ManageOrders = () => {
               <strong>In Stock:</strong> {i?.inStock ? "Yes" : "No"}
             </p>
             {/* <Button variant="outlined" onClick={()=>handleDelete(i._id)} >Delete</Button> */}
-
+            <Button type="primary" onClick={() => handleEdit(i._id)}>
+              Update
+            </Button>
             <DeleteModal onDelete={()=>handleDelete(i._id)} />
           </Card>
         ))}

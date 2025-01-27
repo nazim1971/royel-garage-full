@@ -1,32 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, InputNumber, message, Modal, Select, Spin } from 'antd';
-import { useAddProductMutation } from '../../redux/features/admin/productApi';
+import { useAddProductMutation, useUpdateProductMutation } from '../../redux/features/admin/productApi';
 import { productsOption, TProduct } from '../../types/products.types';
 import { TResponse } from '../../types/globel';
 import { productSchema } from '../../schema/product.schema';
+import { z } from 'zod';
 
 
 interface ProductModelProps {
-    refetch: () => void; 
+    refetch: () => void;
+    isEditMode?: boolean; 
+    initialValues?: TProduct; 
   }
 
-
-
-
-
-const ProductModel: React.FC<ProductModelProps> = ({refetch}) => {
+const ProductModel: React.FC<ProductModelProps> = ({ refetch, isEditMode, initialValues }) => {
   const [addProduct] = useAddProductMutation();
+  const [updateProduct] = useUpdateProductMutation();
 
   const [form] = Form.useForm<TProduct>();
   const [formErrors, setFormErrors] = useState<any>({});
   const [loading, setLoading] = useState(false); // State to manage submit button loading
   const [open, setOpen] = useState(false);
 
+    // Set form values when editing
+    useEffect(() => {
+        if (isEditMode && initialValues) {
+          form.setFieldsValue(initialValues);
+        }
+      }, [isEditMode, initialValues, form]);
+
   const onFinish = async (values: TProduct) => {
     try {
       setLoading(true); // Set loading to true when the form is submitted
       setFormErrors({});
-
       productSchema.parse(values);
 
       const productsData = {
@@ -38,17 +44,20 @@ const ProductModel: React.FC<ProductModelProps> = ({refetch}) => {
         quantity: values.quantity,
         isStock: true,
       };
-
-      const res = (await addProduct(productsData)) as TResponse;
-      console.log('RES', res);
+      let res: TResponse;
+      if (isEditMode && initialValues) {
+        res = (await updateProduct({ id: initialValues._id, ...productsData })) as TResponse;
+      } else {
+        res = (await addProduct(productsData)) as TResponse;
+      }
 
       if (res?.error) {
-        message.error(res.error?.data?.message || 'Failed to add product.');
+        message.error(res.error?.data?.message || 'Failed to submit product.');
       } else {
-        message.success(res.data?.message || 'Product added successfully!');
-        form.resetFields(); 
+        message.success(res.data?.message || `Product ${isEditMode ? 'updated' : 'added'} successfully!`);
+        form.resetFields();
         refetch();
-        setOpen(false); // Close the modal after successful submission
+        setOpen(false);
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -78,7 +87,7 @@ const ProductModel: React.FC<ProductModelProps> = ({refetch}) => {
         Add Bike
       </Button>
       <Modal
-        title="Add Product"
+        title={isEditMode ? 'Update Product' : 'Add Product'}
         open={open}
         onCancel={handleCancel}
         footer={null} // Remove the footer to eliminate the Ok button

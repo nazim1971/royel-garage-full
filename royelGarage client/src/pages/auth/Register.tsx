@@ -2,9 +2,9 @@ import { z } from "zod";
 import { useRegisterMutation } from "../../redux/features/auth/authApi";
 import { useState } from "react";
 import { Button, Form, Input, message } from "antd";
-import Password from "antd/es/input/Password";
 import { TResponse } from "../../types/globel";
 import { useNavigate } from "react-router";
+import { customerSchema } from "../../schema/customer.schema";
 
 type TCustomer = {
   name: string;
@@ -12,13 +12,7 @@ type TCustomer = {
   password: string;
 };
 
-const customerSchema = z.object({
-  name: z.string({ required_error: "Name is required" }),
-  email: z
-    .string({ required_error: "Email is required" })
-    .email({ message: "Invalid email format" }),
-  password: z.string({ required_error: "Password is required" }),
-});
+
 
 const Register = () => {
 
@@ -74,6 +68,7 @@ const Register = () => {
   return (
    <>
     <Form
+    form={form}
       name="basic"
       labelCol={{ span: 8 }}
       wrapperCol={{ span: 16 }}
