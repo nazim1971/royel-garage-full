@@ -66,6 +66,7 @@ const bikeSchema = new Schema<Tbike>({
   },
   inStock: {
     type: Boolean,
+    default: true,
     required: [true, 'Stock status is required'],
   },
 }, {
