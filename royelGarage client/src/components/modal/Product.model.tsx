@@ -3,18 +3,18 @@ import { Button, Form, Input, InputNumber, message, Modal, Select, Spin } from '
 import { useAddProductMutation } from '../../redux/features/admin/productApi';
 import { productsOption, TProduct } from '../../types/products.types';
 import { TResponse } from '../../types/globel';
-import { z } from 'zod';
+import { productSchema } from '../../schema/product.schema';
 
-const productSchema = z.object({
-  name: z.string().min(1, { message: 'Name is required' }),
-  brand: z.string().min(1, { message: 'Brand is required' }),
-  price: z.number().min(0, { message: 'Price must be greater than or equal to 0' }),
-  category: z.enum(['Mountain', 'Road', 'Hybrid', 'Electric'], { message: 'Invalid category' }),
-  description: z.string().min(10, { message: 'Description must be 10 character long' }),
-  quantity: z.number().int().min(1, { message: 'Quantity must be at least 1' }),
-});
 
-const ProductModel: React.FC = ({refetch}) => {
+interface ProductModelProps {
+    refetch: () => void; 
+  }
+
+
+
+
+
+const ProductModel: React.FC<ProductModelProps> = ({refetch}) => {
   const [addProduct] = useAddProductMutation();
 
   const [form] = Form.useForm<TProduct>();

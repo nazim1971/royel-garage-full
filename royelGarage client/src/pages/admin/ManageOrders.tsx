@@ -1,7 +1,8 @@
-import { Button, Card, Col, Flex, message, Spin } from "antd";
+import { Card, Col, Flex, message, Spin } from "antd";
 
 import ProductModel from "../../components/modal/Product.model";
 import { useDeleteProductMutation, useGetAllProductQuery } from "../../redux/features/admin/productApi";
+import DeleteModal from "../../components/modal/DeleteModel";
 
 const ManageOrders = () => {
 
@@ -77,7 +78,9 @@ const ManageOrders = () => {
             <p>
               <strong>In Stock:</strong> {i?.inStock ? "Yes" : "No"}
             </p>
-            <Button variant="outlined" onClick={()=>handleDelete(i._id)} >Delete</Button>
+            {/* <Button variant="outlined" onClick={()=>handleDelete(i._id)} >Delete</Button> */}
+
+            <DeleteModal onDelete={()=>handleDelete(i._id)} />
           </Card>
         ))}
       </Col>
