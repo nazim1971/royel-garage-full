@@ -1,4 +1,5 @@
 import CustomerLayout from "../../components/layout/CustomerLayout";
+import ProtectedRoute from "../../components/layout/ProtectedRoute";
 import CheckOut from "../../pages/coustomer/CheckOut";
 import Profile from "../../pages/coustomer/Profile";
 import ViewOrder from "../../pages/coustomer/ViewOrder";
@@ -7,26 +8,28 @@ export const customerPaths = [
     {
       name: "Dashboard",
       path: "dashboard",
-      element: <CustomerLayout />,
-    },
-    {
-      name: "All management",
+      element: <ProtectedRoute>
+        <CustomerLayout />
+      </ProtectedRoute>,
       children: [
         {
           name: "Profile",
           path: "profile",
-          element: <Profile />,
+          element: <ProtectedRoute><Profile /></ProtectedRoute>,
         },
         {
           name: "Check-out",
           path: "check-out",
-          element: <CheckOut/>,
+          element: <ProtectedRoute>
+            <CheckOut/>
+          </ProtectedRoute>,
         },
         {
           name: "View Order",
           path: "view-order",
-          element: <ViewOrder />,
+          element: <ProtectedRoute><ViewOrder /></ProtectedRoute>,
         },
       ],
-    },
+    }
+   
   ];

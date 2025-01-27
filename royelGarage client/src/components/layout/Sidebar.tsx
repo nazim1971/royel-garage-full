@@ -12,22 +12,28 @@ const userRole = {
   };
   
   const Sidebar = () => {
+    // Fetch the current user
+    const user = useAppSelector(selectCurrentUser);
   
-    const user = useAppSelector(selectCurrentUser)
+    let sidebarItems;
+
+    // Default to empty string if the role is undefined
+    const role = user?.role || "";
   
-     //const role = "admin";
-     let sidebarItems;
-  
-     switch (user!.role) {
-       case userRole.ADMIN:
-         sidebarItems = menuGenerator(adminPaths, userRole.ADMIN);
-         break;
-       case userRole.CUSTOMER:
-         sidebarItems = menuGenerator(customerPaths, userRole.CUSTOMER);
-         break;
-       default:
-         break;
-     }
+    switch (role) {
+      case userRole.ADMIN:
+        console.log("Generating sidebar for Admin role");
+        sidebarItems = menuGenerator(adminPaths, userRole.ADMIN);  // Admin paths
+        break;
+      case userRole.CUSTOMER:
+        console.log("Generating sidebar for Customer role");
+        sidebarItems = menuGenerator(customerPaths, userRole.CUSTOMER);  // Customer paths
+        break;
+      default:
+        console.log("No role, generating default menu");
+        sidebarItems = menuGenerator([], null);  // Fallback case with no role-based routes
+        break;
+    }
   
   
     return (

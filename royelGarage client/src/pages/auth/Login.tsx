@@ -33,7 +33,7 @@ const Login = () => {
 
       // Show success message using Ant Design's message component
       message.success("Login successful!");
-      navigate(`/${user.role}/dashboard`);
+      navigate(`/${user.role}`);
     } catch (error: any) {
       const err = error as { data?:  { message?: string } };
       if (err?.data) {

@@ -8,11 +8,13 @@ import ProductDetails from "../pages/Public/ProductDetails";
 import { generateRoutes } from "../utils/routeGenerator";
 import { adminPaths } from "./admin/AdminPaths";
 import { customerPaths } from "./customer/CustomerPaths";
+import Home from "../pages/Public/Home";
 
 const AppRoutes = () => {
     return (
       <Routes>
         <Route path="/" element={<App />}>
+        <Route path="" element={<Home/>} />
           <Route path="about" element={<About/>} />
           <Route path="all-products" element={<AllProducts/>} />
           <Route path="product-details" element={<ProductDetails/>} />
