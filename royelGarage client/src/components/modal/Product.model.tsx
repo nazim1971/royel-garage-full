@@ -75,7 +75,7 @@ const ProductModel: React.FC = ({refetch}) => {
   return (
     <>
       <Button type="primary" onClick={showModal}>
-        Open Modal with async logic
+        Add Bike
       </Button>
       <Modal
         title="Add Product"
