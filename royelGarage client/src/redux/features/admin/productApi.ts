@@ -1,3 +1,4 @@
+import { TProduct } from "../../../types/products.types";
 import { baseApi } from "../../api/baseApi";
 
 const productApi = baseApi.injectEndpoints({
@@ -21,11 +22,11 @@ const productApi = baseApi.injectEndpoints({
           method: "DELETE",
         }),
       }),
-      updateProduct: builder.mutation({
-        query: ({ id, updatedData }) => ({
+      updateProduct: builder.mutation<any, { id: string; productData: Partial<TProduct> }>({
+        query: ({ id, productData }) => ({
           url: `/products/${id}`,
-          method: "PUT",
-          body: updatedData,
+          method: 'PUT',
+          body: productData,
         }),
       }),
   }),

@@ -18,6 +18,9 @@ const ManageOrders = () => {
   const [deleteProduct] = useDeleteProductMutation();
   const [selectedProduct, setSelectedProduct] = useState<TProduct | null>(null);
 
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
   console.log(products);
   if (isFetching) {
     return <Spin tip="Loading products..." />;
@@ -27,6 +30,7 @@ const ManageOrders = () => {
     return <p>Error loading products. Please try again later.</p>;
   }
 
+  //Delete logic
   const handleDelete = async (id) => {
     try {
       await deleteProduct(id).unwrap();
@@ -38,15 +42,26 @@ const ManageOrders = () => {
     }
   };
 
-  const handleEdit = (product) => {
-    setSelectedProduct(product); // Set product to edit
+  const handleEdit = (product: TProduct) => {
+    setSelectedProduct(product);
+    setIsEditMode(true);
+    setOpenModal(true); // Open modal in edit mode
+  };
+
+  const handleAddNew = () => {
+    setSelectedProduct(null);
+    setIsEditMode(false);
+    setOpenModal(true); // Open modal in add mode
   };
 
   return (
     <>
       <Flex style={{ paddingBottom: "20px" }}>
-        <ProductModel refetch={refetch} isEditMode={false} />
+        <Button type="primary" onClick={handleAddNew}>
+          Add Bike
+        </Button>
       </Flex>
+      
       <h1>Hello</h1>
       <Col
         span={24}
@@ -86,13 +101,22 @@ const ManageOrders = () => {
               <strong>In Stock:</strong> {i?.inStock ? "Yes" : "No"}
             </p>
             {/* <Button variant="outlined" onClick={()=>handleDelete(i._id)} >Delete</Button> */}
-            <Button type="primary" onClick={() => handleEdit(i._id)}>
+            <Button type="primary" onClick={() => handleEdit(i)}>
               Update
             </Button>
             <DeleteModal onDelete={()=>handleDelete(i._id)} />
           </Card>
         ))}
       </Col>
+
+      {/* Product Modal */}
+      <ProductModel
+        refetch={refetch}
+        isEditMode={isEditMode}
+        initialValues={selectedProduct}
+        open={openModal}
+        onClose={() => setOpenModal(false)} // Close modal on cancel or success
+      />
     </>
   );
 };

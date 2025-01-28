@@ -8,26 +8,31 @@ import { z } from 'zod';
 
 
 interface ProductModelProps {
-    refetch: () => void;
-    isEditMode?: boolean; 
-    initialValues?: TProduct; 
-  }
+  refetch: () => void;
+  isEditMode?: boolean;
+  initialValues?: TProduct | null;
+  open: boolean;
+  onClose: () => void;
+}
 
-const ProductModel: React.FC<ProductModelProps> = ({ refetch, isEditMode, initialValues }) => {
+
+
+const ProductModel: React.FC<ProductModelProps> = ({ refetch, isEditMode = false, initialValues, open, onClose  }) => {
   const [addProduct] = useAddProductMutation();
   const [updateProduct] = useUpdateProductMutation();
-
   const [form] = Form.useForm<TProduct>();
   const [formErrors, setFormErrors] = useState<any>({});
-  const [loading, setLoading] = useState(false); // State to manage submit button loading
-  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false); 
 
-    // Set form values when editing
-    useEffect(() => {
-        if (isEditMode && initialValues) {
-          form.setFieldsValue(initialValues);
-        }
-      }, [isEditMode, initialValues, form]);
+  useEffect(() => {
+    if (open) {
+      if (isEditMode && initialValues) {
+        form.setFieldsValue(initialValues);  // Set fields for edit mode
+      } else {
+        form.resetFields(); // Reset fields for add mode
+      }
+    }
+  }, [isEditMode, initialValues, open, form]);
 
   const onFinish = async (values: TProduct) => {
     try {
@@ -45,19 +50,19 @@ const ProductModel: React.FC<ProductModelProps> = ({ refetch, isEditMode, initia
         isStock: true,
       };
       let res: TResponse;
-      if (isEditMode && initialValues) {
-        res = (await updateProduct({ id: initialValues._id, ...productsData })) as TResponse;
-      } else {
-        res = (await addProduct(productsData)) as TResponse;
-      }
+    if (isEditMode && initialValues) {
+      res = await updateProduct({ id: initialValues._id, productData: productsData });
+    } else {
+      res = await addProduct(productsData);
+    }
 
       if (res?.error) {
         message.error(res.error?.data?.message || 'Failed to submit product.');
       } else {
         message.success(res.data?.message || `Product ${isEditMode ? 'updated' : 'added'} successfully!`);
-        form.resetFields();
+        form.resetFields(); // Reset fields after successful submission
         refetch();
-        setOpen(false);
+        handleOnClose(); // Close modal after submission
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -73,23 +78,17 @@ const ProductModel: React.FC<ProductModelProps> = ({ refetch, isEditMode, initia
     }
   };
 
-  const showModal = () => {
-    setOpen(true);
-  };
-
-  const handleCancel = () => {
-    setOpen(false);
+  const handleOnClose = () => {
+    form.resetFields(); // Reset form fields when closing the modal
+    onClose(); // Call the parent onClose to handle modal state
   };
 
   return (
     <>
-      <Button type="primary" onClick={showModal}>
-        Add Bike
-      </Button>
       <Modal
         title={isEditMode ? 'Update Product' : 'Add Product'}
         open={open}
-        onCancel={handleCancel}
+        onCancel={handleOnClose}
         footer={null} // Remove the footer to eliminate the Ok button
       >
         <Form
@@ -98,7 +97,7 @@ const ProductModel: React.FC<ProductModelProps> = ({ refetch, isEditMode, initia
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
           style={{ maxWidth: 600, paddingTop: '40px' }}
-          initialValues={{ remember: true }}
+          initialValues={initialValues || undefined} 
           onFinish={onFinish}
           autoComplete="off"
         >
