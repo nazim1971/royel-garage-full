@@ -101,7 +101,13 @@ const AllProducts = () => {
           <Select
             placeholder="Check Stock"
             options={inStockOption}
-            onChange={(value) => setInstockFilter(value)}
+            onChange={(value) => {
+              if (value === '') {
+                setInstockFilter(undefined); // Reset filter
+              } else {
+                setInstockFilter(value); // Apply the selected stock filter
+              }
+            }}
             style={{ width: "200px" }}
           />
         </Col>
