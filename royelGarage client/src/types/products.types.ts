@@ -8,11 +8,18 @@ export const productsOption = ECategory.map((i)=>({
 export type TCategory = (typeof ECategory)[number];
 
 export type TProduct = {
+  _id?: string;
   name: string;
   brand: string;
   price: number;
   category: TCategory;
   description: string;
   quantity: number;
-  isStock: boolean;
+  inStock: boolean;
 };
+
+
+export const categoryOptions = ECategory.map((i)=>({
+  value: i,
+  label:i
+}))

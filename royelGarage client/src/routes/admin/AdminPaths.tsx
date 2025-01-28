@@ -7,6 +7,7 @@ import ManageUsers from "../../pages/admin/ManageUsers";
 export const adminPaths = [
   {
     name: "Dashboard",
+    path: "",
     element: <ProtectedRoute>
       <AdminLayout />
     </ProtectedRoute>,

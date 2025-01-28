@@ -9,6 +9,7 @@ import { generateRoutes } from "../utils/routeGenerator";
 import { adminPaths } from "./admin/AdminPaths";
 import { customerPaths } from "./customer/CustomerPaths";
 import Home from "../pages/Public/Home";
+import ProtectedRoute from "../components/layout/ProtectedRoute";
 
 const AppRoutes = () => {
   return (
@@ -20,10 +21,24 @@ const AppRoutes = () => {
         <Route path="product-details/:id" element={<ProductDetails />} />
       </Route>
 
-      <Route path="/admin" element={<App />}>
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <App />
+          </ProtectedRoute>
+        }
+      >
         {generateRoutes(adminPaths)}
       </Route>
-      <Route path="/customer" element={<App />}>
+      <Route
+        path="/customer"
+        element={
+          <ProtectedRoute>
+            <App />
+          </ProtectedRoute>
+        }
+      >
         {generateRoutes(customerPaths)}
       </Route>
 

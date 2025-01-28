@@ -3,9 +3,8 @@ import { TRoutePaths, TSidebarItem } from "../types/sidebar.types";
 
 // Default public routes without role
 const defaultRoutes: TRoutePaths[] = [
-  { path: "", name: "Home" },
+  { path: " ", name: "Home" },
   { path: "about", name: "About Us" },
-  { path: "product-details", name: "Product-details" },
   { path: "all-products", name: "All-products" },
 ];
 

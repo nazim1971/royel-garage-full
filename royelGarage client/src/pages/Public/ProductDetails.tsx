@@ -1,10 +1,12 @@
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import {  useGetProductByIdQuery } from "../../redux/features/admin/productApi";
-import { Spin } from "antd";
+import { Button, Spin } from "antd";
 
 const ProductDetails = () => {
   const { id } = useParams(); // Get the product ID from the URL params
   const { data: product, isFetching, isError } = useGetProductByIdQuery(id );
+
+  const navigate = useNavigate()
 
   console.log(product);
 
@@ -37,6 +39,8 @@ const ProductDetails = () => {
     <p>
       <strong>In Stock:</strong> {product.data?.isStock ? "Yes" : "No"}
     </p>
+
+    <Button style={{backgroundColor: 'green'}} onClick={() => navigate(`/check-out`)} > Buy Now </Button>
   </div>
   )
 }
