@@ -79,6 +79,9 @@ const ManageOrders = () => {
               <strong>Brand:</strong> {i?.brand}
             </p>
             <p>
+              <strong>Model:</strong> {i?.model}
+            </p>
+            <p>
               <strong>Category:</strong> {i?.category}
             </p>
             <p>

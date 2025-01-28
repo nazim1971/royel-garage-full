@@ -1,1 +1,1 @@
-export const productSrcField: string[] = ['name', 'brand', 'category'];
+export const productSrcField: string[] = ['name', 'brand', 'category', 'model'];

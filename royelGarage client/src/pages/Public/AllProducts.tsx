@@ -6,6 +6,8 @@ import { categoryOptions, TProduct } from "../../types/products.types";
 
 const AllProducts = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(1000);
   const [categoryFilter, setCategoryFilter] = useState<string | undefined>(
     undefined
   );
@@ -24,17 +26,20 @@ const AllProducts = () => {
         const matchesSearchQuery =
           product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.brand.toLowerCase().includes(searchQuery.toLowerCase());
+          product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.model.toLowerCase().includes(searchQuery.toLowerCase());
 
         const matchesCategory = categoryFilter
           ? product.category.toLowerCase() === categoryFilter.toLowerCase()
           : true;
 
-        return matchesSearchQuery && matchesCategory;
+          const matchesPrice = product.price >= minPrice && product.price <= maxPrice;
+
+        return matchesSearchQuery && matchesCategory && matchesPrice;
       });
       setFilteredProducts(filtered);
     }
-  }, [searchQuery, categoryFilter, products]);
+  }, [searchQuery, categoryFilter, products, minPrice, maxPrice]);
 
   if (isFetching) {
     return <Spin tip="Loading products..." />;
@@ -59,7 +64,17 @@ const AllProducts = () => {
           />
         </Col>
         <Col span={6}>
-          <Slider min={1} max={1000} />
+        <Slider
+            range
+            min={0}
+            max={1000}
+            defaultValue={[minPrice, maxPrice]}
+            onChange={(value) => {
+              setMinPrice(value[0]);
+              setMaxPrice(value[1]);
+            }}
+            tooltip={{ formatter: (value) => `$${value}` }}
+          />
         </Col>
         <Col span={6}>
           <Select
@@ -83,7 +98,8 @@ const AllProducts = () => {
           flexWrap: "wrap",
         }}
       >
-        {filteredProducts?.map((i) => (
+       {
+        filteredProducts.length ?  filteredProducts?.map((i) => (
           <Card
             title={i?.name}
             key={i._id}
@@ -96,6 +112,9 @@ const AllProducts = () => {
           >
             <p>
               <strong>Brand:</strong> {i?.brand}
+            </p>
+            <p>
+              <strong>Model:</strong> {i?.model}
             </p>
             <p>
               <strong>Category:</strong> {i?.category}
@@ -116,7 +135,10 @@ const AllProducts = () => {
               View details
             </Button>
           </Card>
-        ))}
+        )) : <div>
+          <h2> No Data</h2>
+        </div>
+       }
       </Col>
     </div>
   );

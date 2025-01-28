@@ -12,6 +12,7 @@ export type TProduct = {
   name: string;
   brand: string;
   price: number;
+  model: string;
   category: TCategory;
   description: string;
   quantity: number;
@@ -19,7 +20,10 @@ export type TProduct = {
 };
 
 
-export const categoryOptions = ECategory.map((i)=>({
-  value: i,
-  label:i
-}))
+export const categoryOptions = [
+  { value: '', label: 'Reset' }, // Adding a reset option
+  ...ECategory.map((i) => ({
+    value: i,
+    label: i,
+  })),
+];

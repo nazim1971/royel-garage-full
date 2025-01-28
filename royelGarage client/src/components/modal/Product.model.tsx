@@ -41,6 +41,7 @@ const ProductModel: React.FC<ProductModelProps> = ({ refetch, isEditMode = false
       const productsData = {
         name: values.name,
         brand: values.brand,
+        model: values.model,
         price: values.price,
         category: values.category,
         description: values.description,
@@ -112,6 +113,15 @@ const ProductModel: React.FC<ProductModelProps> = ({ refetch, isEditMode = false
             help={formErrors.brand}
           >
             <Input placeholder="Enter product brand" />
+          </Form.Item>
+
+          <Form.Item<TProduct>
+            label="Model"
+            name="model"
+            validateStatus={formErrors.brand ? 'error' : ''}
+            help={formErrors.model}
+          >
+            <Input placeholder="Enter product model" />
           </Form.Item>
 
           <Form.Item<TProduct>
