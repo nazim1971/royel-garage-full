@@ -7,7 +7,7 @@ import ViewOrder from "../../pages/coustomer/ViewOrder";
 export const customerPaths = [
     {
       name: "Dashboard",
-      path: "dashboard",
+      path: "",
       element: <ProtectedRoute>
         <CustomerLayout />
       </ProtectedRoute>,
@@ -30,6 +30,7 @@ export const customerPaths = [
           element: <ProtectedRoute><ViewOrder /></ProtectedRoute>,
         },
       ],
+      
     }
    
   ];
