@@ -27,3 +27,9 @@ export const categoryOptions = [
     label: i,
   })),
 ];
+
+export const inStockOption = [
+  {value: '', label: 'Reset'},
+  {value: true, label: 'In Stock'},
+  {value: false, label: 'Out of Stock'}
+]
