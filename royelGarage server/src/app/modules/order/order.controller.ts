@@ -3,13 +3,21 @@ import { orderService } from './order.service';
 import { Bike } from '../bike/bike.model';
 import mongoose from 'mongoose';
 import { checkBikeAvailability } from '../../utilities/order/checkBikeAbility';
+import { User } from '../user/user.model';
 
 // Make order 
 const createOrder = async (req: Request, res: Response, next: NextFunction) => {
  
 
   try {
-    const { email, product, quantity, totalPrice: orderTotalPrice } = req.body;
+    const {userId, email, product, quantity, totalPrice: orderTotalPrice } = req.body;
+
+    //is user exist
+    const userExists = await User.findById(userId);
+    if (!userExists) {
+      return res.status(404).json({ message: 'User not found', success: false });
+    }
+    
     // Check bike availability
     const availabilityError = await checkBikeAvailability(product, quantity);
     if (availabilityError) {
@@ -40,7 +48,7 @@ const createOrder = async (req: Request, res: Response, next: NextFunction) => {
       { $set: { quantity: updatedQuantity, inStock: updatedQuantity > 0 } },
     );
 
-    const orderInfo = { email, product: bike._id, quantity, totalPrice };
+    const orderInfo = {userId, email, product: bike._id, quantity, totalPrice };
     const result = await orderService.createOrder(orderInfo);
 
     return res.status(201).json({

@@ -4,6 +4,10 @@ import { Torder } from './order.interface';
 // Define the Order schema
 const orderSchema = new Schema<Torder>(
   {
+    userId: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'User id is required'],
+    },
     email: {
       type: String,
       required: [true, 'Customer email is required'],
