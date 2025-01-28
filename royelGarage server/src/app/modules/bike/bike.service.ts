@@ -1,3 +1,6 @@
+
+import QueryBuilder from '../../builder/QueryBuilder';
+import { productSrcField } from './bike.const';
 import { Tbike } from './bike.interface';
 import { Bike } from './bike.model';
 
@@ -6,20 +9,21 @@ const createBike = async (bikeData: Tbike) => {
   return result;
 };
 
-const getAllBikeFromDB = async (searchTerm?: string) => {
-  let query = {};
-    if (searchTerm) {
-      // Search in name, brand, or category fields
-      query = {
-        $or: [
-          { name: { $regex: searchTerm, $options: 'i' } },
-          { brand: { $regex: searchTerm, $options: 'i' } },
-          { category: { $regex: searchTerm, $options: 'i' } },
-        ],
-      };
-    }
-    const result = await Bike.find(query);
-    return result;
+const getAllBikeFromDB = async (payload: Record<string, unknown>) => {
+  
+    const productQuery = new QueryBuilder(
+      Bike.find(),
+      payload,
+    )
+      .search(productSrcField)
+      .filter()
+      .sort()
+      .paginate()
+      .fields();
+  
+    const result = await productQuery.modelQuery;
+    const meta = await productQuery.countTotal();
+    return { meta, result };
 };
 
 const getSingleBikeFromDB = async (id: string) => {

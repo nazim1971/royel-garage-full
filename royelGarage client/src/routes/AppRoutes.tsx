@@ -11,26 +11,26 @@ import { customerPaths } from "./customer/CustomerPaths";
 import Home from "../pages/Public/Home";
 
 const AppRoutes = () => {
-    return (
-      <Routes>
-        <Route path="/" element={<App />}>
-        <Route path="" element={<Home/>} />
-          <Route path="about" element={<About/>} />
-          <Route path="all-products" element={<AllProducts/>} />
-          <Route path="product-details" element={<ProductDetails/>} />
-        </Route>
-  
-        <Route path="/admin" element={<App />}>
-          {generateRoutes(adminPaths)}
-        </Route>
-        <Route path="/customer" element={<App />}>
-          {generateRoutes(customerPaths)}
-        </Route>
-  
-        <Route path="/login" element={<Login/>} />
-        <Route path="/register" element={<Register/>} />
-      </Routes>
-    );
-  };
-  
-  export default AppRoutes;
+  return (
+    <Routes>
+      <Route path="/" element={<App />}>
+        <Route path="" element={<Home />} />
+        <Route path="about" element={<About />} />
+        <Route path="all-products" element={<AllProducts />} />
+        <Route path="product-details/:id" element={<ProductDetails />} />
+      </Route>
+
+      <Route path="/admin" element={<App />}>
+        {generateRoutes(adminPaths)}
+      </Route>
+      <Route path="/customer" element={<App />}>
+        {generateRoutes(customerPaths)}
+      </Route>
+
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+    </Routes>
+  );
+};
+
+export default AppRoutes;

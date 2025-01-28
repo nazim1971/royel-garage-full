@@ -1,70 +1,79 @@
 import { FilterQuery, Query } from 'mongoose';
 
 class QueryBuilder<T> {
-  private modelQuery: Query<T[], T>;
-  private query: Record<string, unknown>;
+  public modelQuery: Query<T[], T>;
+  public query: Record<string, unknown>;
 
   constructor(modelQuery: Query<T[], T>, query: Record<string, unknown>) {
     this.modelQuery = modelQuery;
     this.query = query;
   }
-
   search(searchableFields: string[]) {
-    const search = this.query?.search as string | undefined;
-    if (search) {
-      const regexQuery = searchableFields.map((field) => ({
-        [field]: { $regex: search, $options: 'i' },
-      }));
+    const searchTerm = this?.query?.searchTerm;
+    if (searchTerm) {
       this.modelQuery = this.modelQuery.find({
-        $or: regexQuery as FilterQuery<T>[],
+        $or: searchableFields.map(
+          (field) =>
+            ({
+              [field]: { $regex: searchTerm, $options: 'i' },
+            }) as FilterQuery<T>,
+        ),
       });
     }
     return this;
   }
 
   filter() {
-    const queryObj = { ...this.query };
+    const queryObj = { ...this.query }; // copy
 
-    // Exclude non-filter fields directly using a set
-    const excludeFields = new Set([
-      'search',
-      'sortBy',
-      'sortOrder',
-      'filter',
-      'limit',
-      'page',
-      'fields',
-    ]);
-    for (const key of Object.keys(queryObj)) {
-      if (excludeFields.has(key)) {
-        delete queryObj[key];
-      }
-    }
+    const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
+
+    excludeFields.forEach((el) => delete queryObj[el]);
+
     this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
+
     return this;
   }
-  authorFilter() {
-    
-    const id = (this.query?.filter as string);
-    if (id) { 
-      this.modelQuery = this.modelQuery.find({ author: id });
-    }
-    return this;
-  }
+
   sort() {
-    const sortBy = (this.query?.sortBy as string) || 'createdAt';
-    const sortOrder = (this.query?.sortOrder as string) || 'desc';
-
-    // Add sorting to the query
-    const sortQuery: { [key: string]: 1 | -1 } = {};
-    sortQuery[sortBy] = sortOrder === 'desc' ? -1 : 1;
-    this.modelQuery = this.modelQuery.sort(sortQuery);
+    const sort = (this?.query?.sort as string)?.split(',').join(' ') || '-createdAt';
+    this.modelQuery = this.modelQuery.sort(sort as string);
     return this;
   }
 
-  getQuery() {
-    return this.modelQuery;
+  paginate() {
+    const page = Number(this?.query?.page) || 1;
+    const limit = Number(this?.query?.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    this.modelQuery = this.modelQuery.skip(skip).limit(limit);
+
+    return this;
+  }
+
+  fields() {
+    const fields =
+      (this?.query?.fields as string)?.split(',').join(' ') || '-__v';
+
+    this.modelQuery = this.modelQuery.select(fields);
+    return this;
+  }
+
+  async countTotal() {
+    const totalQueries = this.modelQuery.getFilter();
+    const total = await this.modelQuery.model.countDocuments(totalQueries);
+    const page = Number(this?.query?.page) || 1;
+    const limit = Number(this?.query?.limit) || 10;
+    const totalPage = Math.ceil(total / limit);
+
+    return {
+      page,
+      limit,
+      total,
+      totalPage,
+    };
   }
 }
+
 
 export default QueryBuilder;

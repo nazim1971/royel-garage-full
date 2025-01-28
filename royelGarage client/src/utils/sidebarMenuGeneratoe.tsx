@@ -19,7 +19,7 @@ export const menuGenerator = (roleRoutes: TRoutePaths[], role: string | null) =>
         acc.push({
           key: item.name,
           label: (
-            <NavLink to={addRolePrefix ? `/${role}/${item.path}` : `/${item.path}`}>
+            <NavLink to={addRolePrefix ? `/${role}/${item.path}` : `/${item?.path}`}>
               {item.name}
             </NavLink>
           ),

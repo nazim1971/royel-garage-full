@@ -19,15 +19,15 @@ const createBike = async (req: Request, res: Response, next: NextFunction) => {
 const getAllBike = async (req: Request, res: Response, next: NextFunction) => {
   
   try {
-    const { searchTerm } = req.query;
-    const result = await bikeService.getAllBikeFromDB(searchTerm as string);
-    if(result.length === 0){
-    return  res.status(404).json({
-        message: 'Not Bike Found',
-        status: false,
-        data: result,
-      });
-    }
+   
+    const result = await bikeService.getAllBikeFromDB(req.query);
+    // if(result.length === 0){
+    // return  res.status(404).json({
+    //     message: 'Not Bike Found',
+    //     status: false,
+    //     data: result,
+    //   });
+    // }
    return res.status(200).json({
       message: 'Bikes retrieved successfully',
       status: true,
