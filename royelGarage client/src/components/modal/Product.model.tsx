@@ -25,14 +25,12 @@ const ProductModel: React.FC<ProductModelProps> = ({ refetch, isEditMode = false
   const [loading, setLoading] = useState(false); 
 
   useEffect(() => {
-    if (open) {
-      if (isEditMode && initialValues) {
-        form.setFieldsValue(initialValues);  // Set fields for edit mode
-      } else {
-        form.resetFields(); // Reset fields for add mode
-      }
+    if (isEditMode && initialValues) {
+      form.setFieldsValue(initialValues); // Set the form fields for editing
+    } else {
+      form.resetFields(); // Reset fields if adding new product
     }
-  }, [isEditMode, initialValues, open, form]);
+  }, [isEditMode, initialValues, form]);
 
   const onFinish = async (values: TProduct) => {
     try {
@@ -62,7 +60,7 @@ const ProductModel: React.FC<ProductModelProps> = ({ refetch, isEditMode = false
         message.success(res.data?.message || `Product ${isEditMode ? 'updated' : 'added'} successfully!`);
         form.resetFields(); // Reset fields after successful submission
         refetch();
-        handleOnClose(); // Close modal after submission
+        onClose() // Close modal after submission
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -78,17 +76,14 @@ const ProductModel: React.FC<ProductModelProps> = ({ refetch, isEditMode = false
     }
   };
 
-  const handleOnClose = () => {
-    form.resetFields(); // Reset form fields when closing the modal
-    onClose(); // Call the parent onClose to handle modal state
-  };
+  
 
   return (
     <>
       <Modal
         title={isEditMode ? 'Update Product' : 'Add Product'}
         open={open}
-        onCancel={handleOnClose}
+        onCancel={onClose}
         footer={null} // Remove the footer to eliminate the Ok button
       >
         <Form
@@ -97,7 +92,7 @@ const ProductModel: React.FC<ProductModelProps> = ({ refetch, isEditMode = false
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
           style={{ maxWidth: 600, paddingTop: '40px' }}
-          initialValues={initialValues || undefined} 
+          initialValues={{ remember: true }} 
           onFinish={onFinish}
           autoComplete="off"
         >

@@ -8,20 +8,13 @@ import { TProduct } from "../../types/products.types";
 
 const ManageOrders = () => {
 
-  const {
-    data: products,
-    refetch,
-    isFetching,
-    isError,
-  } = useGetAllProductQuery(undefined);
-
+  const { data: products, refetch, isFetching, isError } = useGetAllProductQuery(undefined);
   const [deleteProduct] = useDeleteProductMutation();
   const [selectedProduct, setSelectedProduct] = useState<TProduct | null>(null);
-
   const [isEditMode, setIsEditMode] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
-  console.log(products);
+ 
   if (isFetching) {
     return <Spin tip="Loading products..." />;
   }
@@ -49,8 +42,8 @@ const ManageOrders = () => {
   };
 
   const handleAddNew = () => {
-    setSelectedProduct(null);
-    setIsEditMode(false);
+    setSelectedProduct(null); // Reset selected product for new entry
+    setIsEditMode(false); // Set to add mode
     setOpenModal(true); // Open modal in add mode
   };
 
@@ -115,7 +108,10 @@ const ManageOrders = () => {
         isEditMode={isEditMode}
         initialValues={selectedProduct}
         open={openModal}
-        onClose={() => setOpenModal(false)} // Close modal on cancel or success
+        onClose={() => {
+          setOpenModal(false); 
+          setSelectedProduct(null); 
+        }}
       />
     </>
   );
