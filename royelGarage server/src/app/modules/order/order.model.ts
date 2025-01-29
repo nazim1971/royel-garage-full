@@ -25,6 +25,15 @@ const orderSchema = new Schema<Torder>(
     totalPrice:{
         type: Number,
       required: [true, 'Total Price is required'],
+    },
+    status: {
+      type: String,
+      enum: ["Pending", "Processing", "Shipped", "Delivered"],
+      default: 'Pending',
+    },
+    isCancel: {
+      type: Boolean,
+      default: false
     }
   },
   {

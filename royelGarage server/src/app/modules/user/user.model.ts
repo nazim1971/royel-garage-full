@@ -78,8 +78,8 @@ userSchema.statics.validateUser = async function (email?: string) {
 };
 
 userSchema.statics.isPasswordMatched = async function (
-  plainTextPassword,
-  hashedPassword,
+  plainTextPassword: string,
+  hashedPassword: string,
 ) {
   return await bcrypt.compare(plainTextPassword, hashedPassword);
 };

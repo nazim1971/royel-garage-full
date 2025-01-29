@@ -18,6 +18,10 @@ router.post(
   AuthController.loginUser,
 );
 
+router.get('/user/:email', AuthController.getSingleUserFromDB );
+
+router.put('/reset-password',  AuthController.resetPassword);
+
 router.post('/refresh-token', AuthController.refreshToken);
 
 export const AuthRoute = router;

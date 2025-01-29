@@ -1,114 +1,106 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, InputNumber, message, Modal, Spin } from 'antd';
-import { TResponse } from '../../types/globel';
-import { z } from 'zod';
-import { useAddOrderMutation } from '../../redux/features/customer/OrderApi';
-import { TOrder } from '../../types/order.types';
-import { OrderSchema } from '../../schema/order.schema';
-import { TProduct } from '../../types/products.types';
+// import React, { useEffect, useState } from 'react';
+// import { Button, Form, Input, InputNumber, message, Modal, Spin } from 'antd';
+// import { TResponse } from '../../types/globel';
+// import { z } from 'zod';
+// import { useAddOrderMutation } from '../../redux/features/customer/OrderApi';
+// import { TOrder } from '../../types/order.types';
+// import { OrderSchema } from '../../schema/order.schema';
+// import { TProduct } from '../../types/products.types';
+// import { selectCurrentUser } from '../../redux/features/auth/authSlice';
+// import { useAppSelector } from '../../redux/hooks';
+// import { useGetProductByIdQuery } from '../../redux/features/admin/productApi';
+// import { useParams } from 'react-router';
 
 
-// Props type definition for OrderModel component
-interface OrderModelProps {
-  refetch: () => void;
-  open: boolean;
-  onClose: () => void;
-  product: TProduct
-}
+// // Props type definition for OrderModel component
+// interface OrderModelProps {
+//   refetch: () => void;
+//   open: boolean;
+//   onClose: () => void;
+//   product: TProduct
+// }
 
-// Refactored OrderModel component
-const OrderModel: React.FC<OrderModelProps> = ({ refetch, open, onClose, product }) => {
-  const [addOrder] = useAddOrderMutation();
-  const [form] = Form.useForm<TOrder>();
-  const [formErrors, setFormErrors] = useState<any>({});
-  const [loading, setLoading] = useState(false);
-  const [totalPrice, setTotalPrice] = useState<number>(0);
+// // Refactored OrderModel component
+// const OrderModel: React.FC<OrderModelProps> = ({  product }) => {
+//   const {id} = useParams();
+//   const {data: data} = useGetProductByIdQuery(id)
+//   const [addOrder] = useAddOrderMutation();
 
-  useEffect(() => {
-      form.resetFields(); // Reset fields if adding a new order
-  }, [form]);
+//   const [quantity, setQuantity] = useState(1);
+//   const totalPrice = data?.price ? Number(data?.price) * quantity : 0;
+//   const user = useAppSelector(selectCurrentUser)
 
-  const onFinish = async (values: TOrder) => {
-    try {
-      setLoading(true); // Start loading spinner
-      setFormErrors({});
-      OrderSchema.parse(values); // Validate with Zod schema
 
-      const orderData = {
-        userId: values.userId,
-        email: values.email,
-        product: product._id,
-        quantity: values.quantity,
-        totalPrice: totalPrice,
-      };
+//   const handleOrderNow = () => {
+//     if (!data?.inStock) {
+//       message.error("This product is out of stock right now.");
+//       return;
+//     }
 
-      let res: TResponse;
-        res = await addOrder(orderData);
+//     if (quantity > Number(data.quantity)) {
+//       toast.error(`Only ${data.quantity} available right now.`);
+//       return;
+//     }
 
-      if (res?.error) {
-        message.error(res.error?.data?.message || 'Failed to submit order.');
-      } else {
-        message.success(res.data?.message || 'Order added successfully!');
-        form.resetFields(); // Reset the form after successful submission
-        refetch();
-        onClose(); // Close the modal after submission
-      }
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const fieldErrors: Record<string, string> = {};
-        error.errors.forEach((err) => {
-          const fieldName = err.path[0] as string;
-          fieldErrors[fieldName] = err.message;
-        });
-        setFormErrors(fieldErrors);
-      }
-    } finally {
-      setLoading(false); // Stop loading spinner
-    }
-  };
+//     console.log({
+//       email: user?.email,
+//       productId: id,
+//       quantity,
+//       totalPrice,
+//     });
 
-  return (
-    <Modal
-      title={'Add Order'}
-      open={open}
-      onCancel={onClose}
-      footer={null} // Remove the default footer
-    >
-      <Form
-        form={form}
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-        style={{ maxWidth: 600, paddingTop: '40px' }}
-        onFinish={onFinish}
-        autoComplete="off"
-      >
+//     message.success("Order placed successfully!");
+//   };
 
-        <Form.Item
-          label="Quantity"
-          name="quantity"
-          validateStatus={formErrors.quantity ? 'error' : ''}
-          help={formErrors.quantity}
-        >
-          <InputNumber style={{ width: '100%' }} placeholder="Enter quantity" />
-        </Form.Item>
+//   return (
+//     <div className="container mx-auto px-4 py-8 flex justify-center">
+//     <Card className="max-w-4xl w-full p-6 shadow-lg">
+//       <h1 className="text-3xl font-bold text-center mb-6">Checkout</h1>
+//       <div className="flex flex-wrap md:flex-nowrap gap-6">
 
-        <Form.Item
-          label="Total Price"
-          name="totalPrice"
-          validateStatus={formErrors.totalPrice ? 'error' : ''}
-          help={formErrors.totalPrice}
-        >
-          <InputNumber style={{ width: '100%' }} placeholder="Enter total price" />
-        </Form.Item>
 
-        <Form.Item label={null}>
-          <Button type="primary" htmlType="submit" disabled={loading}>
-            {loading ? <Spin /> : 'Submit'}
-          </Button>
-        </Form.Item>
-      </Form>
-    </Modal>
-  );
-};
+//         <div className="flex-1">
+//           <h2 className="text-2xl font-semibold">{product?.name}</h2>
+//           <p className="text-lg text-gray-600 mt-2">
+//             Brand: {product?.brand}
+//           </p>
+//           <p className="text-xl font-bold text-green-600 mt-2">
+//             Total: {totalPrice.toLocaleString()} BDT
+//           </p>
 
-export default OrderModel;
+//           <div className="mt-6 flex items-center gap-4">
+//             <Button
+//               variant="outline"
+//               className="text-xl px-4 py-2"
+//               onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+//             >
+//               -
+//             </Button>
+//             <span className="text-lg font-medium">{quantity}</span>
+//             <Button
+//               variant="outline"
+//               className="text-xl px-4 py-2"
+//               onClick={() =>
+//                 setQuantity((prev) =>
+//                   Math.min(Number(product?.quantity) || 1, prev + 1)
+//                 )
+//               }
+//             >
+//               +
+//             </Button>
+//           </div>
+
+//           <Button
+//             onClick={handleOrderNow}
+//             className="mt-6 w-full bg-blue-500 hover:bg-blue-600 text-lg py-3 rounded-lg"
+//           >
+//             Order Now
+//           </Button>
+//         </div>
+//       </div>
+//     </Card>
+//   </div>
+//   );
+// };
+
+// export default OrderModel;

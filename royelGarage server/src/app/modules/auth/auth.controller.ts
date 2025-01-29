@@ -35,7 +35,7 @@ const loginUser = catchAsync(async (req, res) => {
     message: 'Login successful',
     data: {
       token: accessToken,
-      RToken: refreshToken
+      RToken: refreshToken,
     },
   });
 });
@@ -52,8 +52,37 @@ const refreshToken = catchAsync(async (req, res) => {
   });
 });
 
+const getSingleUserFromDB = catchAsync(async (req, res) => {
+  const user = await AuthService.getSingleUser(req.params.email);
+
+  const userResponse = {
+    name: user.name,
+    email: user.email,
+  };
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User retrieved successfully!',
+    data: userResponse,
+  });
+});
+
+const resetPassword = catchAsync(async (req, res) => {
+  const { currentPassword, email, newPassword } = req.body;
+  const result = await AuthService.changePassword(email,currentPassword, newPassword);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: result.message,
+    data: null
+  });
+});
+
 export const AuthController = {
   registerUser,
   loginUser,
   refreshToken,
+  getSingleUserFromDB,
+  resetPassword,
 };

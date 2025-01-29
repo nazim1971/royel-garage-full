@@ -14,6 +14,9 @@ export const menuGenerator = (roleRoutes: TRoutePaths[], role: string | null) =>
   // Function to generate menu items from routes
   const generateMenuItems = (routes: TRoutePaths[], addRolePrefix: boolean) => {
     return routes.reduce((acc: TSidebarItem[], item) => {
+
+      // if (!item.path || !item.name) return acc;
+
       if (item.path && item.name) {
         acc.push({
           key: item.name,
@@ -24,12 +27,15 @@ export const menuGenerator = (roleRoutes: TRoutePaths[], role: string | null) =>
           ),
         });
       }
+       if (item.children) {
+        const filteredChildren = item.children.filter(child => child.name !== "Check-out");
 
-      if (item.children) {
+
+      if (filteredChildren.length > 0) {
         acc.push({
           key: item.name,
           label: item.name,
-          children: item.children.map((child) => ({
+          children: filteredChildren.map((child) => ({
             key: child.name,
             label: (
               <NavLink to={addRolePrefix ? `/${role}/${child.path}` : `/${child.path}`}>
@@ -38,7 +44,7 @@ export const menuGenerator = (roleRoutes: TRoutePaths[], role: string | null) =>
             ),
           })),
         });
-      }
+      } }
 
       return acc;
     }, []);

@@ -50,7 +50,7 @@ const ProductModel: React.FC<ProductModelProps> = ({ refetch, isEditMode = false
       };
       let res: TResponse;
     if (isEditMode && initialValues) {
-      res = await updateProduct({ id: initialValues._id, productData: productsData });
+      res = await updateProduct({ id: initialValues?._id, productData: productsData });
     } else {
       res = await addProduct(productsData);
     }

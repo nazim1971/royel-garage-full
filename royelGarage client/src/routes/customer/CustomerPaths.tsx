@@ -19,7 +19,7 @@ export const customerPaths = [
         },
         {
           name: "Check-out",
-          path: "check-out",
+          path: "check-out/:id",
           element: <ProtectedRoute>
             <CheckOut/>
           </ProtectedRoute>,

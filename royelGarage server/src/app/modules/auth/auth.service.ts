@@ -2,9 +2,10 @@ import config from '../../config';
 import { AppError } from '../../error/AppError';
 import { TUser } from '../user/user.interface';
 import { User } from '../user/user.model';
-import { TLogin } from './auth.interface';
+import { TLogin, TSingleUser } from './auth.interface';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import httpStatus from 'http-status';
+import bcrypt from 'bcrypt';
 
 const registerUserIntoDB = async (payload: TUser) => {
   const user = await User.isUserExists(payload?.email);
@@ -68,4 +69,45 @@ const refreshToken = async (token: string): Promise<{ token: string }> => {
   return { token: accessToken };
 };
 
-export const AuthService = { registerUserIntoDB, loginUser, refreshToken };
+const getSingleUser = async (email: string): Promise<TSingleUser> => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  if (user?.isBlocked) {
+    throw new AppError(httpStatus.FORBIDDEN, 'User is blocked');
+  }
+
+  return user;
+};
+
+export const changePassword  = async (email: string,currentPassword: string, newPassword: string) => {
+  // Find the user
+  const user = await User.findOne({ email }).select('+password');
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+
+  const userStatus = user?.isBlocked;
+  // check if the user is already deleted
+  if (userStatus === true) {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked!!!');
+  }
+ 
+
+    // Verify current password
+    const isPasswordCorrect = await User.isPasswordMatched(currentPassword, user.password);
+    if (!isPasswordCorrect) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Current password is incorrect');
+    }
+
+    const newHashedPassword = await bcrypt.hash(newPassword, Number(config.slat));
+
+    await User.findOneAndUpdate({ email }, { password: newHashedPassword });
+
+  return { message: 'Password updated successfully' };
+};
+
+export const AuthService = { registerUserIntoDB, loginUser, refreshToken, getSingleUser, changePassword };
