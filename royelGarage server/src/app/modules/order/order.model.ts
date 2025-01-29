@@ -16,6 +16,7 @@ const orderSchema = new Schema<Torder>(
     product: {
       type: Schema.Types.ObjectId,
       required: [true, 'Product (bike) is required'],
+      ref: 'bikes'
     },
     quantity: {
       type: Number,

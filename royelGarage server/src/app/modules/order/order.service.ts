@@ -47,12 +47,25 @@ const getTotalRevenue = async () => {
 };
 
 const getAllOrderFromDB = async () => {
-  const result = await Order.find();
+  const result = await Order.find().populate('product');
     return result;
 };
+
+const deleteOrderById = async (id: string) => {
+  const result = await Order.findByIdAndDelete(id);
+  return result;
+};
+
+const updateOrderById = async (id: string, updateData: { status?: string, isCancel?: boolean }) => {
+  const result = await Order.findByIdAndUpdate( id , updateData, { new: true });
+  return result;
+};
+
 
 export const orderService = {
   createOrder,
   getTotalRevenue,
-  getAllOrderFromDB
+  getAllOrderFromDB,
+  deleteOrderById,
+  updateOrderById
 };
