@@ -101,11 +101,38 @@ const resetPassword = catchAsync(async (req, res) => {
   });
 });
 
+// Get all users
+const getAllUsersFromDB = catchAsync(async (req , res) => {
+  const users = await AuthService.getAllUsers();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All users retrieved successfully!',
+    data: users,
+  });
+});
+
+// Update isBlocked status
+const updateUserBlockedStatusFromDB = catchAsync(async (req, res) => {
+  const { email, isBlocked } = req.body;
+  const updatedUser = await AuthService.updateUserBlockedStatus(email, isBlocked);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User block status updated successfully!',
+    data: updatedUser,
+  });
+});
+
 export const AuthController = {
   registerUser,
   loginUser,
   refreshToken,
   getSingleUserFromDB,
   resetPassword,
-  updateUserNameFromDB
+  updateUserNameFromDB,
+  getAllUsersFromDB,
+  updateUserBlockedStatusFromDB
 };

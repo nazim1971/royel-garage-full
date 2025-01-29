@@ -26,4 +26,8 @@ router.put('/reset-password',  AuthController.resetPassword);
 
 router.post('/refresh-token', AuthController.refreshToken);
 
+router.get('/user', AuthController.getAllUsersFromDB);
+
+router.put('/user/block-status', AuthController.updateUserBlockedStatusFromDB);
+
 export const AuthRoute = router;

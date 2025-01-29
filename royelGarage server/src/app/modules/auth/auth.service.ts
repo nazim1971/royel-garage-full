@@ -127,4 +127,37 @@ export const changePassword  = async (email: string,currentPassword: string, new
   return { message: 'Password updated successfully' };
 };
 
-export const AuthService = { registerUserIntoDB, loginUser, refreshToken, getSingleUser, updateUserName ,changePassword };
+
+const getAllUsers = async (): Promise<TSingleUser[]> => {
+  const users = await User.find();
+  if (!users.length) {
+    throw new AppError(httpStatus.NOT_FOUND, 'No users found');
+  }
+  return users.map((user) => ({
+    name: user.name,
+    email: user.email,
+    isBlocked: user.isBlocked,
+    role: user.role
+  }));
+};
+
+// Update isBlocked field
+const updateUserBlockedStatus = async (email: string, isBlocked: boolean): Promise<TSingleUser> => {
+  const user = await User.findOneAndUpdate(
+    { email },
+    { isBlocked },
+    { new: true }
+  );
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  return {
+    name: user.name,
+    email: user.email,
+    isBlocked: user.isBlocked,
+  };
+};
+
+export const AuthService = { registerUserIntoDB, loginUser, refreshToken, getSingleUser, updateUserName ,changePassword, getAllUsers, updateUserBlockedStatus };
