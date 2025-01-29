@@ -36,6 +36,13 @@ const productApi = baseApi.injectEndpoints({
         body: { status, isCancel, role },
       }),
     }),
+
+    getAllOrderByEmail: builder.query({
+      query: (email: string) => ({
+        url: `/orders/user-order/${email}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -43,4 +50,5 @@ export const {
   useDeleteOrderMutation,
   useGetAllOrderQuery,
   useUpdateOrderMutation,
+  useGetAllOrderByEmailQuery,
 } = productApi;
