@@ -68,6 +68,28 @@ const getSingleUserFromDB = catchAsync(async (req, res) => {
   });
 });
 
+const updateUserNameFromDB = catchAsync(async (req, res) => {
+  const { email } = req.params;  // Get email from request params
+  const { newName } = req.body;  // Get newName from request body
+
+  // Call the update service to update the user's name
+  const user = await AuthService.updateUserName(email, newName);
+
+  const userResponse = {
+    name: user.name,
+    email: user.email,
+  };
+
+  // Send success response
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User name updated successfully!',
+    data: userResponse,
+  });
+});
+
+
 const resetPassword = catchAsync(async (req, res) => {
   const { currentPassword, email, newPassword } = req.body;
   const result = await AuthService.changePassword(email,currentPassword, newPassword);
@@ -85,4 +107,5 @@ export const AuthController = {
   refreshToken,
   getSingleUserFromDB,
   resetPassword,
+  updateUserNameFromDB
 };

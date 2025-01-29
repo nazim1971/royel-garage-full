@@ -20,6 +20,8 @@ router.post(
 
 router.get('/user/:email', AuthController.getSingleUserFromDB );
 
+router.put('/user/:email', AuthController.updateUserNameFromDB)
+
 router.put('/reset-password',  AuthController.resetPassword);
 
 router.post('/refresh-token', AuthController.refreshToken);

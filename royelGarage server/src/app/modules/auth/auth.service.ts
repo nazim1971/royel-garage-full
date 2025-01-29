@@ -82,6 +82,24 @@ const getSingleUser = async (email: string): Promise<TSingleUser> => {
   return user;
 };
 
+const updateUserName = async (email: string, newName: string): Promise<TUser> => {
+  // Find the user by email
+  const user = await User.findOneAndUpdate(
+    { email },         // Query condition: find user by email
+    { name: newName }
+  );
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  if (user.isBlocked) {
+    throw new AppError(httpStatus.FORBIDDEN, 'User is blocked');
+  }
+
+  return user;
+};
+
 export const changePassword  = async (email: string,currentPassword: string, newPassword: string) => {
   // Find the user
   const user = await User.findOne({ email }).select('+password');
@@ -96,7 +114,6 @@ export const changePassword  = async (email: string,currentPassword: string, new
     throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked!!!');
   }
  
-
     // Verify current password
     const isPasswordCorrect = await User.isPasswordMatched(currentPassword, user.password);
     if (!isPasswordCorrect) {
@@ -110,4 +127,4 @@ export const changePassword  = async (email: string,currentPassword: string, new
   return { message: 'Password updated successfully' };
 };
 
-export const AuthService = { registerUserIntoDB, loginUser, refreshToken, getSingleUser, changePassword };
+export const AuthService = { registerUserIntoDB, loginUser, refreshToken, getSingleUser, updateUserName ,changePassword };
