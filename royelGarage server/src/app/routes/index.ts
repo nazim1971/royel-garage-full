@@ -4,7 +4,6 @@ import { AdminRoute } from '../modules/admin/admin.routes';
 import { orderRoutes } from '../modules/order/order.route';
 import { bikeRoutes } from '../modules/bike/bike.route';
 
-
 const router = Router();
 
 // Define all module-specific routes

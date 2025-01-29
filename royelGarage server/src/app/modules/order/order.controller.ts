@@ -10,10 +10,10 @@ const createOrder = async (req: Request, res: Response, next: NextFunction) => {
  
 
   try {
-    const {userId, email, product, quantity, totalPrice: orderTotalPrice } = req.body;
+    const { email, product, quantity, totalPrice: orderTotalPrice } = req.body;
 
     //is user exist
-    const userExists = await User.findById(userId);
+    const userExists = await User.findOne({email});
     if (!userExists) {
       return res.status(404).json({ message: 'User not found', success: false });
     }
@@ -48,7 +48,7 @@ const createOrder = async (req: Request, res: Response, next: NextFunction) => {
       { $set: { quantity: updatedQuantity, inStock: updatedQuantity > 0 } },
     );
 
-    const orderInfo = {userId, email, product: bike._id, quantity, totalPrice };
+    const orderInfo = {email, product: bike._id, quantity, totalPrice };
     const result = await orderService.createOrder(orderInfo);
 
     return res.status(201).json({

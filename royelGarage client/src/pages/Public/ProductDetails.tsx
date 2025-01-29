@@ -1,12 +1,15 @@
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import { useGetProductByIdQuery } from "../../redux/features/admin/productApi";
 import { Button, Spin } from "antd";
+import OrderModel from "../../components/modal/OrderModel";
+import { useState } from "react";
 
 const ProductDetails = () => {
   const { id } = useParams(); // Get the product ID from the URL params
-  const { data: product, isFetching, isError } = useGetProductByIdQuery(id);
+  const { data: product, isFetching, isError, refetch } = useGetProductByIdQuery(id);
+    const [openModal, setOpenModal] = useState(false);
 
-  const navigate = useNavigate();
+
 
   console.log(product);
 
@@ -18,7 +21,12 @@ const ProductDetails = () => {
     return <p>Error loading product details. Please try again later.</p>;
   }
 
+  const handleOrderNow = () => {
+    setOpenModal(true); // Open modal in add mode
+  };
+
   return (
+    <>
     <div>
       <h2>{product.data?.name}</h2>
       <p>
@@ -43,11 +51,20 @@ const ProductDetails = () => {
       <Button
         style={{ backgroundColor: "green" }}
         disabled={!product.data?.inStock}
-        onClick={() => navigate(`/check-out`)}
+        onClick={handleOrderNow}
       >
         Buy Now
       </Button>
     </div>
+    <OrderModel
+        refetch={refetch}
+        product={product}
+        open={openModal}
+        onClose={() => {
+          setOpenModal(false);  
+        }}
+      />
+    </>
   );
 };
 
