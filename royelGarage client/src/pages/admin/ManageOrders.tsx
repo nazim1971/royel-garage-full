@@ -1,8 +1,11 @@
-import { Table, TableColumnsType, TableProps } from "antd";
+import { Table, TableColumnsType, TableProps, Select } from "antd";
 import { useGetAllOrderQuery } from "../../redux/features/admin/orderApi";
+import { useUpdateOrderMutation } from "../../redux/features/admin/orderApi"; // Import the mutation
 
 import { TQueryParam } from "../../types/globel";
 import { TProduct } from "../../types/products.types";
+import { useAppSelector } from "../../redux/hooks";
+import { selectCurrentUser } from "../../redux/features/auth/authSlice";
 
 // Define the DataType for the order
 interface DataType {
@@ -18,12 +21,10 @@ interface DataType {
 
 // ManageOrder component
 const ManageOrder = () => {
-  // State for query params (if required for future filtering)
-  // const [params, setParams] = useState<TQueryParam[] | undefined>(undefined);
-
   // Fetch order data using your query
   const { data: orderData, isFetching } = useGetAllOrderQuery(undefined);
-  console.log(orderData);
+  const [updateOrder] = useUpdateOrderMutation(); // Initialize updateOrder mutation
+  const user = useAppSelector(selectCurrentUser);
 
   // Mapping the table data from the fetched orders
   const tableData: DataType[] =
@@ -66,11 +67,24 @@ const ManageOrder = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      filters: [
-        { text: "Pending", value: "Pending" },
-        { text: "Completed", value: "Completed" },
-        { text: "Cancelled", value: "Cancelled" },
-      ],
+      render: (status, record) => (
+        <Select
+        defaultValue={status}
+        onChange={(value) => handleStatusChange(value, record._id)}
+        style={{ width: 120 }}
+      >
+        <Select.Option value="Pending">Pending</Select.Option>
+        <Select.Option value="Processing">Processing</Select.Option>
+        <Select.Option value="Shipped">Shipped</Select.Option>
+        <Select.Option value="Delivered">Delivered</Select.Option>
+      </Select>
+    ),
+    filters: [
+      { text: "Pending", value: "Pending" },
+      { text: "Processing", value: "Processing" },
+      { text: "Shipped", value: "Shipped" },
+      { text: "Delivered", value: "Delivered" },
+    ],
       onFilter: (value, record) => record.status === value,
     },
     {
@@ -86,6 +100,16 @@ const ManageOrder = () => {
     },
   ];
 
+  // Handling the status change (call the update mutation)
+  const handleStatusChange = async (newStatus: string, orderId: string, isCancel?: boolean) => {
+    try {
+      await updateOrder({ id: orderId, status: newStatus, isCancel, role: `${user?.role}` }); // Assuming "admin" for role
+      console.log("Order status updated successfully");
+    } catch (error) {
+      console.error("Error updating order status:", error);
+    }
+  };
+
   // Handling table changes (pagination, filtering, sorting)
   const onChange: TableProps<DataType>["onChange"] = (
     pagination,
@@ -95,12 +119,9 @@ const ManageOrder = () => {
   ) => {
     if (extra.action === "filter") {
       const queryParams: TQueryParam[] = [];
-      
-
       filters.status?.forEach((item) =>
         queryParams.push({ name: "status", value: item })
       );
-
       // setParams(queryParams);
     }
   };

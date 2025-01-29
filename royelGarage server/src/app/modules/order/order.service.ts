@@ -61,11 +61,27 @@ const updateOrderById = async (id: string, updateData: { status?: string, isCanc
   return result;
 };
 
+const getOrderById = async (id: string) => {
+  try {
+    const order = await Order.findById(id).populate('product'); // Fetch the order and populate the product
+    return order;
+  } catch (error) {
+    throw new Error("Error fetching the order by ID");
+  }
+};
+
+const getAllOrdersByEmail = async (email: string) => {
+  const result = await Order.find({ email }).populate('product');
+  return result;
+};
+
 
 export const orderService = {
   createOrder,
   getTotalRevenue,
   getAllOrderFromDB,
   deleteOrderById,
-  updateOrderById
+  updateOrderById,
+  getOrderById,
+  getAllOrdersByEmail
 };

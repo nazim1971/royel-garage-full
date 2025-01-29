@@ -1,23 +1,8 @@
-
 import { baseApi } from "../../api/baseApi";
-
-
-// const generateQueryParams = (args?: TQueryParam[]): URLSearchParams => {
-//   const params = new URLSearchParams();
-//   if (args) {
-//     args.forEach((item: TQueryParam) => {
-//       params.append(item.name, item.value as string);
-//     });
-//   }
-//   return params;
-// };
-
 
 const productApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-
-   
-
+    // Get all orders
     getAllOrder: builder.query({
       query: () => ({
         url: "/orders",
@@ -25,9 +10,37 @@ const productApi = baseApi.injectEndpoints({
       }),
     }),
 
-  
-     
+    // Delete order by id (only accessible by admin or customer who owns the order)
+    deleteOrder: builder.mutation({
+      query: (id: string) => ({
+        url: `/orders/${id}`,
+        method: "DELETE",
+      }),
+    }),
+
+    // Update order by id (customer can cancel, admin can update status and cancel)
+    updateOrder: builder.mutation({
+      query: ({
+        id,
+        status,
+        isCancel,
+        role,
+      }: {
+        id: string;
+        status?: string;
+        isCancel?: boolean;
+        role: string;
+      }) => ({
+        url: `/orders/${id}`,
+        method: "PUT",
+        body: { status, isCancel, role },
+      }),
+    }),
   }),
 });
 
-export const { useGetAllOrderQuery } = productApi;
+export const {
+  useDeleteOrderMutation,
+  useGetAllOrderQuery,
+  useUpdateOrderMutation,
+} = productApi;
