@@ -72,7 +72,16 @@ const updateUserNameFromDB = catchAsync(async (req, res) => {
   const { email } = req.params;  // Get email from request params
   const { newName } = req.body;  // Get newName from request body
 
-  // Call the update service to update the user's name
+  // Validate that newName is provided
+  if (!newName) {
+    return sendResponse(res, {
+      statusCode: httpStatus.BAD_REQUEST,
+      success: false,
+      message: 'New name is required',
+    });
+  }
+
+  // Call the service to update the user's name
   const user = await AuthService.updateUserName(email, newName);
 
   const userResponse = {
@@ -88,6 +97,7 @@ const updateUserNameFromDB = catchAsync(async (req, res) => {
     data: userResponse,
   });
 });
+
 
 
 const resetPassword = catchAsync(async (req, res) => {
@@ -116,13 +126,21 @@ const getAllUsersFromDB = catchAsync(async (req , res) => {
 // Update isBlocked status
 const updateUserBlockedStatusFromDB = catchAsync(async (req, res) => {
   const { email, isBlocked } = req.body;
-  const updatedUser = await AuthService.updateUserBlockedStatus(email, isBlocked);
+  
+  if (!email) {
+    return sendResponse(res, {
+      statusCode: httpStatus.BAD_REQUEST,
+      success: false,
+      message: 'Email is required',
+    });
+  }
+
+  await AuthService.updateUserBlockedStatus(email, isBlocked);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'User block status updated successfully!',
-    data: updatedUser,
   });
 });
 

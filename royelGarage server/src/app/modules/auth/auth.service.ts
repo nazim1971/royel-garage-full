@@ -83,10 +83,11 @@ const getSingleUser = async (email: string): Promise<TSingleUser> => {
 };
 
 const updateUserName = async (email: string, newName: string): Promise<TUser> => {
-  // Find the user by email
+  // Find the user by email and update the name, returning the updated document
   const user = await User.findOneAndUpdate(
     { email },         // Query condition: find user by email
-    { name: newName }
+    { name: newName },
+    { new: true }      // Ensure we get the updated user object back
   );
 
   if (!user) {
@@ -99,6 +100,7 @@ const updateUserName = async (email: string, newName: string): Promise<TUser> =>
 
   return user;
 };
+
 
 export const changePassword  = async (email: string,currentPassword: string, newPassword: string) => {
   // Find the user
@@ -143,20 +145,25 @@ const getAllUsers = async (): Promise<TSingleUser[]> => {
 
 // Update isBlocked field
 const updateUserBlockedStatus = async (email: string, isBlocked: boolean): Promise<TSingleUser> => {
-  const user = await User.findOneAndUpdate(
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  if (user.isBlocked && isBlocked) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'User is already blocked');
+  }
+  
+  const result = await User.findOneAndUpdate(
     { email },
     { isBlocked },
     { new: true }
   );
 
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
-  }
-
   return {
-    name: user.name,
-    email: user.email,
-    isBlocked: user.isBlocked,
+    name: result?.name,
+    email: result?.email,
+    isBlocked: result?.isBlocked,
   };
 };
 

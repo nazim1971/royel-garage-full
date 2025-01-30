@@ -1,5 +1,15 @@
-import { Table, TableColumnsType, TableProps, Select, Popconfirm, Button } from "antd";
-import { useDeleteOrderMutation, useGetAllOrderQuery } from "../../redux/features/admin/orderApi";
+import {
+  Table,
+  TableColumnsType,
+  TableProps,
+  Select,
+  Popconfirm,
+  Button,
+} from "antd";
+import {
+  useDeleteOrderMutation,
+  useGetAllOrderQuery,
+} from "../../redux/features/admin/orderApi";
 import { useUpdateOrderMutation } from "../../redux/features/admin/orderApi"; // Import the mutation
 
 import { TQueryParam } from "../../types/globel";
@@ -98,7 +108,20 @@ const ManageOrder = () => {
       title: "Cancelled",
       dataIndex: "isCancel",
       key: "isCancel",
-      render: (isCancel) => (isCancel ? "Yes" : "No"),
+      render: (isCancel) => (
+        <span
+          style={{
+            display: "inline-block",
+            padding: "5px 15px",
+            borderRadius: "20px",
+            backgroundColor: isCancel ? "red" : "green", // Red for canceled, green for not canceled
+            color: "white",
+            textAlign: "center",
+          }}
+        >
+          {isCancel ? "Yes" : "No"}
+        </span>
+      ),
       filters: [
         { text: "Yes", value: true },
         { text: "No", value: false },
@@ -115,7 +138,9 @@ const ManageOrder = () => {
           okText="Yes"
           cancelText="No"
         >
-          <Button type="danger">Delete</Button>
+          <Button type="dashed" style={{ backgroundColor: "red", color: 'white' }}>
+            Delete
+          </Button>
         </Popconfirm>
       ),
     },
@@ -124,7 +149,11 @@ const ManageOrder = () => {
   // Handling the status change (call the update mutation)
   const handleStatusChange = async (newStatus: string, orderId: string) => {
     try {
-      await updateOrder({ id: orderId, status: newStatus, role: `${user?.role}` });
+      await updateOrder({
+        id: orderId,
+        status: newStatus,
+        role: `${user?.role}`,
+      });
       console.log("Order status updated successfully");
 
       // Update the table data locally to reflect the status change
@@ -144,7 +173,9 @@ const ManageOrder = () => {
       console.log("Order deleted successfully");
 
       // Remove the deleted order from the local state
-      setTableData((prevData) => prevData.filter((order) => order._id !== orderId));
+      setTableData((prevData) =>
+        prevData.filter((order) => order._id !== orderId)
+      );
     } catch (error) {
       console.error("Error deleting order:", error);
     }

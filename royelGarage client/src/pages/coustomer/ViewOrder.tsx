@@ -1,4 +1,4 @@
-import { Table, TableColumnsType, TableProps, Button } from "antd";
+import { Table, TableColumnsType, TableProps, Button, Popconfirm } from "antd";
 import { useGetAllOrderByEmailQuery } from "../../redux/features/admin/orderApi"; // Use email-based query
 import { useUpdateOrderMutation } from "../../redux/features/admin/orderApi"; // Import the mutation for canceling order
 import { TProduct } from "../../types/products.types";
@@ -104,21 +104,29 @@ const ViewOrder = () => {
       dataIndex: "isCancel",
       key: "isCancel",
       render: (isCancel, record) => (
-        <Button
-          type="primary"
-          danger
-          disabled={isCancel} // Disable button if the order is already canceled
-          onClick={() => handleCancelOrder(record._id)}
+        <Popconfirm
+          title="Are you sure you want to cancel this order?" // Confirm message
+          onConfirm={() => handleCancelOrder(record._id)} // Confirm action
+          okText="Yes"
+          cancelText="No"
+          placement="leftTop"
+          disabled={isCancel} // Disable Popconfirm if the order is already canceled
         >
-          {isCancel ? "Canceled" : "Cancel Order"}
-        </Button>
+          <Button
+            type="primary"
+            danger
+            disabled={isCancel} // Disable button if the order is already canceled
+          >
+            {isCancel ? "Canceled" : "Cancel Order"}
+          </Button>
+        </Popconfirm>
       ),
       filters: [
         { text: "Yes", value: true },
         { text: "No", value: false },
       ],
       onFilter: (value, record) => record.isCancel === value,
-    },
+    }
   ];
 
   return (
