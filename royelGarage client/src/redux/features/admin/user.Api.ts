@@ -31,7 +31,7 @@ const userApi = baseApi.injectEndpoints({
       }),
     }),
     
-    updateUser: builder.mutation<
+    updateUserName: builder.mutation<
       any,
       { email: string; userData: Partial<TUser> }
     >({
@@ -41,7 +41,26 @@ const userApi = baseApi.injectEndpoints({
         body: userData,
       }),
     }),
+
+    getAllUsers: builder.query({
+      query: () => ({
+        url: "/auth/user",
+        method: "GET",
+      }),
+    }),
+
+    updateUserBlockedStatus: builder.mutation<
+    any,
+    { email: string; isBlocked: boolean }
+  >({
+    query: ({ email, isBlocked }) => ({
+      url: `/auth/user/block-status`,
+      method: "PATCH",
+      body: { isBlocked },
+    }),
+  }),
+
   }),
 });
 
-export const { useGetUserByEmailQuery, useResetUserPassMutation, useUpdateUserMutation } = userApi;
+export const { useGetUserByEmailQuery, useResetUserPassMutation, useUpdateUserNameMutation , useGetAllUsersQuery, useUpdateUserBlockedStatusMutation } = userApi;
