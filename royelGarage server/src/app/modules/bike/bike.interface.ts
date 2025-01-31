@@ -3,6 +3,7 @@ export type Tbike = {
   brand: string;
   model: string;
   price: number;
+  image?: string;
   category: 'Mountain' | 'Road' | 'Hybrid' | 'Electric';
   description: string;
   quantity: number;

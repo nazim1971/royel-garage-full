@@ -49,6 +49,11 @@ const bikeSchema = new Schema<Tbike>({
     required: [true, 'Model name is required'],
     set: (value: any) => validateType(value, 'string'),
   },
+  image: {
+    type: String,
+    trim: true,
+  },
+  
   price: {
     type: Number,
     required: [true, 'Bike price is required'],

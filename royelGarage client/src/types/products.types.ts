@@ -13,6 +13,7 @@ export type TProduct = {
   brand: string;
   price: number;
   model: string;
+  image?: string;
   category: TCategory;
   description: string;
   quantity: number;

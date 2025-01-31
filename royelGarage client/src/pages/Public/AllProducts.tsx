@@ -1,4 +1,4 @@
-import { Button, Card, Col, Flex, Input, Select, Slider, Spin } from "antd";
+import { Button, Card, Col, Flex, Image, Input, Select, Slider, Spin } from "antd";
 import { useGetAllProductQuery } from "../../redux/features/admin/productApi";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
@@ -134,6 +134,7 @@ const AllProducts = () => {
                 boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
               }}
             >
+              <Image width={200}  src={i?.image} />
               <p>
                 <strong>Brand:</strong> {i?.brand}
               </p>
