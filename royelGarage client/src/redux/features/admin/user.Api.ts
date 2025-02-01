@@ -56,7 +56,7 @@ const userApi = baseApi.injectEndpoints({
     query: ({ email, isBlocked }) => ({
       url: `/auth/user/block-status`,
       method: "PATCH",
-      body: { isBlocked },
+      body: {isBlocked, email },
     }),
   }),
 

@@ -1,4 +1,4 @@
-import { Button, Form, FormProps, Input, message } from "antd";
+import { Button, Form, Input, message, Card, Row, Col, FormProps, Spin } from "antd";
 import { useAppDispatch } from "../../redux/hooks";
 import { useNavigate } from "react-router";
 import { useLoginMutation } from "../../redux/features/auth/authApi";
@@ -14,13 +14,9 @@ const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const [login, { data, error }] = useLoginMutation();
-
-  console.log("data=> ", data);
-  console.log("error", error);
+  const [login, { data, error, isLoading }] = useLoginMutation(); // Track loading state
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
-    console.log("Success:", values);
     const userInfo = {
       email: values.email,
       password: values.password,
@@ -35,60 +31,151 @@ const Login = () => {
       message.success("Login successful!");
       navigate(`/${user.role}`);
     } catch (error: any) {
-      const err = error as { data?:  { message?: string } };
+      const err = error as { data?: { message?: string } };
       if (err?.data) {
-        // Show specific error for incorrect password or credentials
         message.error(err?.data?.message);
       } else {
-        // Handle any other errors
         console.error("Login error:", error);
       }
     }
   };
 
-  const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
-    errorInfo
-  ) => {
+  const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
 
   return (
-    <>
-      <Form
-        name="basic"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-        style={{ maxWidth: 600, paddingTop: "40px" }}
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
-      >
-        <Form.Item<FieldType>
-          label="Email"
-          name="email"
-          rules={[{ required: true, message: "Please input your email!" }]}
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundImage:
+          "url(https://res.cloudinary.com/dfvgxf4dc/image/upload/v1738403287/close-up-vintage-motorcycle_1232-2667_py650b.jpg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        position: "relative",
+      }}
+    >
+      {/* Overlay for background image with white opacity */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(255, 255, 255, 0.3)", // 30% white opacity
+          zIndex: 1,
+        }}
+      />
+
+      {/* Card for login form */}
+      <div style={{ zIndex: 2, position: "relative" }}>
+        <Card
+          style={{
+            width: "100%",
+            maxWidth: 400,
+            padding: "30px",
+            borderRadius: "10px",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            zIndex: 2,
+          }}
+          title={
+            <>
+              <div
+                style={{
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  fontSize: "24px",
+                  paddingBottom: "10px",
+                }}
+              >
+                Welcome Back
+              </div>
+              <p
+                style={{
+                  textAlign: "center",
+                  fontWeight: "normal",
+                  color: "GrayText",
+                  paddingBottom: "10px",
+                }}
+              >
+                Please enter your details
+              </p>
+            </>
+          }
         >
-          <Input />
-        </Form.Item>
+          <Form
+            name="basic"
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+            initialValues={{ remember: true }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            autoComplete="off"
+            layout="vertical"
+          >
+            <Form.Item<FieldType>
+              label="Email"
+              name="email"
+              rules={[{ required: true, message: "Please input your email!" }]}
+            >
+              <Input placeholder="Enter your email" />
+            </Form.Item>
 
-        <Form.Item<FieldType>
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
-        >
-          <Input.Password />
-        </Form.Item>
+            <Form.Item<FieldType>
+              label="Password"
+              name="password"
+              rules={[{ required: true, message: "Please input your password!" }]}
+            >
+              <Input.Password placeholder="Enter your password" />
+            </Form.Item>
 
-        <Form.Item label={null}>
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
-      </Form>
+            <Form.Item style={{ textAlign: "center", width: "100%" }}>
+              <Button
+                type="default"
+                htmlType="submit"
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  backgroundColor: "black", // Initial background color
+                  color: "white",
+                  border: "none", // Remove border for a cleaner look
+                  fontWeight: "500", // Bold text for a stronger effect
+                  fontSize: "16px", // Slightly larger text
+                  borderRadius: "4px", // Rounded corners
+                  transition: "background-color 0.3s, opacity 0.3s", // Smooth transition for hover effect
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = "0.8"} // Set opacity on hover
+                onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+                loading={isLoading}  // Add the loading prop to show spinner
+              >
+                Login
+              </Button>
+            </Form.Item>
+          </Form>
 
-      <Button href="/register"> Register</Button>
-    </>
+          <Row justify="center">
+            <Col>
+              <Button
+                href="/register"
+                type="link"
+                style={{
+                  color: "#1890ff",
+                  textAlign: "center",
+                  padding: 0,
+                }}
+              >
+                Don't have an account? Register
+              </Button>
+            </Col>
+          </Row>
+        </Card>
+      </div>
+    </div>
   );
 };
 

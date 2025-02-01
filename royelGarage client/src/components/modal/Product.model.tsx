@@ -54,7 +54,7 @@ const ProductModel: React.FC<ProductModelProps> = ({ refetch, isEditMode = false
       productSchema.parse(values);
 
       // Keep the current imageUrl if it already exists
-      let finalImageUrl = image || initialValues?.image ; 
+      const finalImageUrl = image || initialValues?.image ; 
 
       const productsData = {
         name: values.name,

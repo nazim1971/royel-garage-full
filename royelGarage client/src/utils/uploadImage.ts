@@ -2,11 +2,11 @@ export const uploadImage = async (file: File) => {
   try {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "pzk6cmri"); // preset_name
-    formData.append("cloud_name", "dbe3ewhey"); // cloud_name
+    formData.append("upload_preset", "Royel_garage"); // preset_name
+    formData.append("cloud_name", "dfvgxf4dc"); // cloud_name
 
     const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dbe3ewhey/image/upload",
+      "https://api.cloudinary.com/v1_1/dfvgxf4dc/image/upload",
       {
         method: "POST",
         body: formData,

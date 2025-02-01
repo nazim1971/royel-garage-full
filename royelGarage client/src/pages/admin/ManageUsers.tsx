@@ -1,4 +1,4 @@
-import { Table, TableColumnsType, Select, Button, Popconfirm } from "antd";
+import { Table, TableColumnsType, Button, Popconfirm, Tag, Select } from "antd";
 import { useEffect, useState } from "react";
 import { useGetAllUsersQuery, useUpdateUserBlockedStatusMutation } from "../../redux/features/admin/user.Api";
 
@@ -15,6 +15,7 @@ const ManageUsers = () => {
   const { data: usersData, isFetching } = useGetAllUsersQuery(undefined);
   const [updateBlockedStatus] = useUpdateUserBlockedStatusMutation();
   const [tableData, setTableData] = useState<DataType[]>([]);
+  const [filteredStatus, setFilteredStatus] = useState<string | undefined>(undefined);
 
   // Mapping the table data from the fetched users
   useEffect(() => {
@@ -45,16 +46,17 @@ const ManageUsers = () => {
       title: "Blocked Status",
       dataIndex: "isBlocked",
       key: "isBlocked",
-      render: (isBlocked, record) => (
-        <Select
-          value={isBlocked ? "Blocked" : "Active"}
-          onChange={(value) => handleBlockedStatusChange(value, record._id)}
-          style={{ width: 120 }}
-        >
-          <Select.Option value="Blocked">Blocked</Select.Option>
-          <Select.Option value="Active">Active</Select.Option>
-        </Select>
+      render: (isBlocked) => (
+        <Tag color={isBlocked ? "red" : "green"}>
+          {isBlocked ? "Blocked" : "Active"}
+        </Tag>
       ),
+      // Add a filter for Blocked and Active status
+      filters: [
+        { text: "Active", value: "Active" },
+        { text: "Blocked", value: "Blocked" },
+      ],
+      onFilter: (value, record) => (value === "Blocked" ? record.isBlocked : !record.isBlocked),
     },
     {
       title: "Actions",
@@ -62,7 +64,7 @@ const ManageUsers = () => {
       render: (_, record) => (
         <Popconfirm
           title={`Are you sure you want to ${record.isBlocked ? 'unblock' : 'block'} this user?`}
-          onConfirm={() => handleBlockedStatusChange(record.isBlocked ? 'Active' : 'Blocked', record._id)}
+          onConfirm={() => handleBlockedStatusChange(record.isBlocked, record.email)}
           okText="Yes"
           cancelText="No"
         >
@@ -74,17 +76,19 @@ const ManageUsers = () => {
     },
   ];
 
-  // Handle status change
-  const handleBlockedStatusChange = async (newStatus: string, userId: string) => {
+  // Handle status change with boolean toggle and email
+  const handleBlockedStatusChange = async (currentStatus: boolean, email: string) => {
     try {
-      const isBlocked = newStatus === "Blocked";
-      await updateBlockedStatus({ email: userId, isBlocked });
-      console.log("User status updated successfully");
+      // Toggle the blocked status (true becomes false, false becomes true)
+      const newStatus = !currentStatus;
+
+      // Send the updated status with email
+      await updateBlockedStatus({ email, isBlocked: newStatus });
 
       // Update the table data locally to reflect the status change
       setTableData((prevData) =>
         prevData.map((user) =>
-          user._id === userId ? { ...user, isBlocked } : user
+          user.email === email ? { ...user, isBlocked: newStatus } : user
         )
       );
     } catch (error) {
@@ -93,12 +97,33 @@ const ManageUsers = () => {
   };
 
   return (
-    <Table<DataType>
-      loading={isFetching}
-      columns={columns}
-      dataSource={tableData}
-      rowKey="_id"
-    />
+    <>
+      <div style={{ marginBottom: "20px" }}>
+        {/* Filter for Blocked and Active users */}
+        <Select
+          style={{ width: 200 }}
+          placeholder="Filter by status"
+          onChange={setFilteredStatus}
+          allowClear
+        >
+          <Select.Option value="Active">Active</Select.Option>
+          <Select.Option value="Blocked">Blocked</Select.Option>
+        </Select>
+      </div>
+
+      <Table<DataType>
+        loading={isFetching}
+        columns={columns}
+        dataSource={
+          filteredStatus
+            ? tableData.filter(user =>
+                filteredStatus === "Blocked" ? user.isBlocked : !user.isBlocked
+              )
+            : tableData
+        }
+        rowKey="_id"
+      />
+    </>
   );
 };
 
