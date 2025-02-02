@@ -1,35 +1,31 @@
-import { Button, Card, Col, Flex, message, Spin } from "antd";
-
-import ProductModel from "../../components/modal/Product.model";
-import { useDeleteProductMutation, useGetAllProductQuery } from "../../redux/features/admin/productApi";
-import DeleteModal from "../../components/modal/DeleteModel";
+import { Button, Card, Col, Row, Flex, message, Spin } from "antd";
 import { useState } from "react";
+import { useDeleteProductMutation, useGetAllProductQuery } from "../../redux/features/admin/productApi";
+import ProductModel from "../../components/modal/Product.model";
+import DeleteModal from "../../components/modal/DeleteModel";
 import { TProduct } from "../../types/products.types";
+import '../../styles/ManageProducts.css'; // Add custom CSS for more control over styling
 
 const ManageProducts = () => {
-
   const { data: products, refetch, isFetching, isError } = useGetAllProductQuery(undefined);
   const [deleteProduct] = useDeleteProductMutation();
   const [selectedProduct, setSelectedProduct] = useState<TProduct | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
- 
   if (isFetching) {
-    return <Spin tip="Loading products..." />;
+    return <Spin tip="Loading products..." className="loading-spinner" />;
   }
 
   if (isError) {
-    return <p>Error loading products. Please try again later.</p>;
+    return <p className="error-text">Error loading products. Please try again later.</p>;
   }
 
-  //Delete logic
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     try {
       await deleteProduct(id).unwrap();
-      refetch()
-     message.destroy('Product deleted successfully!')
-      console.log("Product deleted successfully!");
+      refetch();
+      message.success('Product deleted successfully!');
     } catch (error) {
       console.error("Failed to delete product:", error);
     }
@@ -49,61 +45,46 @@ const ManageProducts = () => {
 
   return (
     <>
-      <Flex style={{ paddingBottom: "20px" }}>
+      <Flex justifyContent="end" style={{ paddingBottom: "20px" }}>
         <Button type="primary" onClick={handleAddNew}>
-          Add Bike
+          Add New Bike
         </Button>
       </Flex>
-      
-      <h1>Hello</h1>
-      <Col
-        span={24}
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          flexWrap: "wrap",
-        }}
-      >
-        {products?.data?.map((i) => (
-          <Card
-            title={i?.name}
-            key={i._id}
-            bordered={false}
-            style={{
-              width: 250,
-              margin: "10px",
-              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-            }}
-          >
-            <p>
-              <strong>Brand:</strong> {i?.brand}
-            </p>
-            <p>
-              <strong>Model:</strong> {i?.model}
-            </p>
-            <p>
-              <strong>Category:</strong> {i?.category}
-            </p>
-            <p>
-              <strong>Description:</strong> {i?.description}
-            </p>
-            <p>
-              <strong>Price:</strong> ${i?.price}
-            </p>
-            <p>
-              <strong>Quantity:</strong> {i?.quantity}
-            </p>
-            <p>
-              <strong>In Stock:</strong> {i?.inStock ? "Yes" : "No"}
-            </p>
-            {/* <Button variant="outlined" onClick={()=>handleDelete(i._id)} >Delete</Button> */}
-            <Button type="primary" onClick={() => handleEdit(i)}>
-              Update
-            </Button>
-            <DeleteModal onDelete={()=>handleDelete(i._id)} />
-          </Card>
+
+      <Row gutter={[24, 24]} className="product-list-container">
+        {products?.data?.map((product) => (
+          <Col xs={24} sm={12} md={8} lg={6} key={product._id} className="product-card-col">
+            <Card
+              className="product-card"
+              hoverable
+              cover={
+                <img
+                  alt={product.name}
+                  src={product.image || "/default-product.png"} // Default image if no product image
+                  className="product-card-image"
+                />
+              }
+              actions={[
+                <Button type="primary" onClick={() => handleEdit(product)}>
+                  Update
+                </Button>,
+                <DeleteModal onDelete={() => handleDelete(product?._id)} />
+              ]}
+            >
+              <Card.Meta
+                title={product.name}
+                description={
+                  <>
+                    <p><strong>Brand:</strong> {product.brand}</p>
+                    <p><strong>Price:</strong> ${product.price}</p>
+                    <p><strong>Stock:</strong> {product.inStock ? "In Stock" : "Out of Stock"}</p>
+                  </>
+                }
+              />
+            </Card>
+          </Col>
         ))}
-      </Col>
+      </Row>
 
       {/* Product Modal */}
       <ProductModel
@@ -112,8 +93,8 @@ const ManageProducts = () => {
         initialValues={selectedProduct}
         open={openModal}
         onClose={() => {
-          setOpenModal(false); 
-          setSelectedProduct(null); 
+          setOpenModal(false);
+          setSelectedProduct(null);
         }}
       />
     </>

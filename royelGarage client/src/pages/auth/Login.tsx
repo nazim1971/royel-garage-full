@@ -1,6 +1,6 @@
 import { Button, Form, Input, message, Card, Row, Col, FormProps, Spin } from "antd";
 import { useAppDispatch } from "../../redux/hooks";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { useLoginMutation } from "../../redux/features/auth/authApi";
 import { verifyToken } from "../../utils/verifyToken";
 import { setUser, TUser } from "../../redux/features/auth/authSlice";
@@ -13,6 +13,8 @@ type FieldType = {
 const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  // const location = useLocation();
+  // const from = location.state?.from?.pathname // Post-login redirection
 
   const [login, { data, error, isLoading }] = useLoginMutation(); // Track loading state
 
@@ -149,11 +151,11 @@ const Login = () => {
                   borderRadius: "4px", // Rounded corners
                   transition: "background-color 0.3s, opacity 0.3s", // Smooth transition for hover effect
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.opacity = "0.8"} // Set opacity on hover
-                onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
-                loading={isLoading}  // Add the loading prop to show spinner
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.8")} // Set opacity on hover
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                loading={isLoading} // Add the loading prop to show spinner
               >
-                Login
+                {isLoading ? <Spin /> : "Login"} {/* Show spinner when loading */}
               </Button>
             </Form.Item>
           </Form>

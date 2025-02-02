@@ -10,6 +10,7 @@ import { adminPaths } from "./admin/AdminPaths";
 import { customerPaths } from "./customer/CustomerPaths";
 import Home from "../pages/Public/Home";
 import ProtectedRoute from "../components/layout/ProtectedRoute";
+import NotFound from "../pages/Public/NotFound";
 
 const AppRoutes = () => {
   return (
@@ -44,6 +45,12 @@ const AppRoutes = () => {
 
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+      {/* Error Route */}
+      <Route path="not-found" element={<NotFound />} />
+
+      {/* Catch-all route for unmatched paths */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

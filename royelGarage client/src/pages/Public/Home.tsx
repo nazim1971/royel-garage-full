@@ -1,47 +1,29 @@
 import React from "react";
-import { Carousel, Flex, Image } from "antd";
+import { Carousel, Row, Col, Image } from "antd";
+import "../../styles/Slider.css"; // Import your CSS file here
 
-const contentStyle: React.CSSProperties = {
-  height: "160px",
-  color: "#fff",
-  lineHeight: "160px",
-  textAlign: "center",
-  background: "#364d79",
-};
+const imageLinks = [
+  "https://res.cloudinary.com/dfvgxf4dc/image/upload/v1738487510/%E5%AE%983333jpg-02_1_vnz9fn.jpg",
+  "https://res.cloudinary.com/dfvgxf4dc/image/upload/v1738487510/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20241010085643_adwg4x.jpg",
+  "https://res.cloudinary.com/dfvgxf4dc/image/upload/v1738487509/1733381927cGgS5_suhrw2.jpg",
+  "https://res.cloudinary.com/dfvgxf4dc/image/upload/v1738487509/cms_2Foriginal-776e3197-8b86-4a6a-af59-394b86b451b1_tuctrq.webp"
+];
 
 const App: React.FC = () => (
-  <Carousel dots autoplay draggable={true}>
-    <Flex >
-      <div>
-      <Image
-    
-       preview={false}
-      src="https://res.cloudinary.com/dfvgxf4dc/image/upload/v1738348154/1733381927cGgS5_wyrbb1.jpg" />
+  <Carousel dots autoplay draggable={true} className="custom-carousel">
+    {imageLinks.map((link, index) => (
+      <div key={index}>
+        <Row justify="center" align="middle" gutter={[16, 16]} className="carousel-slide">
+          <Col xs={24} md={12}>
+            <Image
+              className="carousel-image"
+              preview={false}
+              src={link}
+            />
+          </Col>
+        </Row>
       </div>
-      <div>
-      <h4>Sport Racing</h4>
-      <h1>300SR</h1>
-      <h4>
-        The CFMOTO 300SR is a sleek 298cc sports bike with superior handling,
-        aerodynamic design, and a responsive engine for thrilling rides.
-      </h4>
-      </div>
-    </Flex>
-    <div>
-      <Image 
-       preview={false}
-      src="https://res.cloudinary.com/dfvgxf4dc/image/upload/v1738348154/1737004310xzf55_td4nd4.avif" />
-    </div>
-    <div>
-      <Image
-       preview={false}
-      src="https://res.cloudinary.com/dfvgxf4dc/image/upload/v1738348153/1733155847hjgQg_ykhbah.avif" />
-    </div>
-    <div>
-      <Image
-       preview={false}
-      src="https://res.cloudinary.com/dfvgxf4dc/image/upload/v1738348153/1733155823sQYEX_tdpexr.avif" />
-    </div>
+    ))}
   </Carousel>
 );
 

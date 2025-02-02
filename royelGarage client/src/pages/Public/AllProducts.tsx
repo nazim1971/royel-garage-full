@@ -1,4 +1,4 @@
-import { Button, Card, Col, Flex, Image, Input, Select, Slider, Spin } from "antd";
+import { Button, Card, Col, Row, Image, Input, Select, Slider, Spin, Tag } from "antd";
 import { useGetAllProductQuery } from "../../redux/features/admin/productApi";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
@@ -40,7 +40,7 @@ const AllProducts = () => {
           ? product.category.toLowerCase() === categoryFilter.toLowerCase()
           : true;
 
-          const matchesStock =
+        const matchesStock =
           instockFilter !== undefined
             ? product.inStock === instockFilter
             : true;
@@ -48,15 +48,16 @@ const AllProducts = () => {
         const matchesPrice =
           product.price >= minPrice && product.price <= maxPrice;
 
-        return matchesSearchQuery && matchesCategory && matchesPrice && matchesStock;
+        return (
+          matchesSearchQuery &&
+          matchesCategory &&
+          matchesPrice &&
+          matchesStock
+        );
       });
       setFilteredProducts(filtered);
     }
   }, [searchQuery, categoryFilter, products, minPrice, maxPrice, instockFilter]);
-
-  if (isFetching) {
-    return <Spin tip="Loading products..." />;
-  }
 
   if (isFetching) {
     return <Spin tip="Loading products..." />;
@@ -68,19 +69,22 @@ const AllProducts = () => {
 
   return (
     <div>
-      <Flex gap={10}>
-        <Col span={6}>
+      {/* Filters Section */}
+      <Row gutter={[16, 16]} style={{ marginBottom: '20px' }}>
+        <Col xs={24} sm={12} md={6}>
           <Input
+            style={{ width: "100%" }}
             placeholder="Search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </Col>
-        <Col span={6}>
+        <Col xs={24} sm={12} md={6}>
           <Slider
             range
             min={0}
             max={1000}
+            style={{ width: "100%" }}
             defaultValue={[minPrice, maxPrice]}
             onChange={(value) => {
               setMinPrice(value[0]);
@@ -89,84 +93,120 @@ const AllProducts = () => {
             tooltip={{ formatter: (value) => `$${value}` }}
           />
         </Col>
-        <Col span={6}>
+        <Col xs={24} sm={12} md={6}>
           <Select
             placeholder="Select a category"
             options={categoryOptions}
             onChange={(value) => setCategoryFilter(value)}
-            style={{ width: "200px" }}
+            style={{ width: "100%" }}
           />
         </Col>
-        <Col span={6}>
+        <Col xs={24} sm={12} md={6}>
           <Select
             placeholder="Check Stock"
             options={inStockOption}
             onChange={(value) => {
-              if (value === '') {
-                setInstockFilter(undefined); // Reset filter
+              if (value === "") {
+                setInstockFilter(undefined);
               } else {
-                setInstockFilter(value); // Apply the selected stock filter
+                setInstockFilter(value);
               }
             }}
-            style={{ width: "200px" }}
+            style={{ width: "100%" }}
           />
         </Col>
-      </Flex>
+      </Row>
 
-      {/* Product cards */}
-      <Col
-        span={24}
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          flexWrap: "wrap",
-        }}
-      >
+      {/* Product Cards Section */}
+      <Row gutter={[16, 16]} justify="start">
         {filteredProducts.length ? (
-          filteredProducts?.map((i) => (
-            <Card
-              title={i?.name}
+          filteredProducts.map((i) => (
+            <Col
+              xs={24}
+              sm={12}
+              md={8}
+              xl={6}
+              xxl={4}
               key={i._id}
-              bordered={false}
-              style={{
-                width: 250,
-                margin: "10px",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-              }}
+              style={{ display: "flex", justifyContent: "center" }}
             >
-              <Image width={200}  src={i?.image} />
-              <p>
-                <strong>Brand:</strong> {i?.brand}
-              </p>
-              <p>
-                <strong>Model:</strong> {i?.model}
-              </p>
-              <p>
-                <strong>Category:</strong> {i?.category}
-              </p>
-              <p>
-                <strong>Description:</strong> {i?.description}
-              </p>
-              <p>
-                <strong>Price:</strong> ${i?.price}
-              </p>
-              <p>
-                <strong>Quantity:</strong> {i?.quantity}
-              </p>
-              <p>
-                <strong>In Stock:</strong> {i?.inStock ? "Yes" : "No"}
-              </p>
-              <Button onClick={() => navigate(`/product-details/${i?._id}`)}>
-                View details
-              </Button>
-            </Card>
+              <Card
+                title={i?.name}
+                bordered={false}
+                hoverable
+                style={{
+                 width: '350px',
+                  boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+                  textAlign: "center",
+                  borderRadius: "10px",
+                  transition: "transform 0.3s"
+        
+                }}
+              >
+                <Image
+                  width={'100%'}
+                  height={'250px'}
+                  style={{
+                    borderRadius: '8px'
+                  }}
+                  preview={false}
+                  src={i?.image || "https://via.placeholder.com/250"}
+                  alt={i?.name}
+                />
+
+                {/* Category tag */}
+                <Tag
+                  style={{
+                    backgroundColor: "#E0F7FA",
+                    borderRadius: "5px",
+                    padding: "4px 8px",
+                    fontSize: "14px",
+                    marginTop: "10px",
+                    width: '80px',
+                    textAlign: 'center'
+                  }}
+                >
+                  {i?.category}
+                </Tag>
+
+                {/* Horizontal line */}
+                <hr style={{ border: "0.5px solid #e8e8e8", margin: "10px 0" }} />
+
+                <p style={{ color: 'GrayText', fontSize: '18px', paddingBottom: '20px' }}>
+                  Brand: {i?.brand}
+                </p>
+
+                {/* Stock Status with conditional color */}
+                <Tag
+                  style={{
+                    backgroundColor: i?.inStock ? "#D0F9D7" : "#FAD4D4",
+                    color: i?.inStock ? "#389e0d" : "#cf1322",
+                    borderRadius: "5px",
+                    padding: "4px 8px",
+                    fontSize: "14px",
+                  }}
+                >
+                  {i?.inStock ? "In Stock" : "Out of Stock"}
+                </Tag>
+
+                <p style={{ fontSize: '22px', fontWeight: 'bold', padding: '10px 0px' }}>
+                  {i?.price} USD
+                </p>
+                <Button
+                  type="primary"
+                  onClick={() => navigate(`/product-details/${i?._id}`)}
+                >
+                  View details
+                </Button>
+              </Card>
+            </Col>
           ))
         ) : (
-          <div>
-            <h2> No Data</h2>
-          </div>
+          <Col span={24} style={{ textAlign: "center" }}>
+            <h2>No Products Found</h2>
+          </Col>
         )}
-      </Col>
+      </Row>
     </div>
   );
 };

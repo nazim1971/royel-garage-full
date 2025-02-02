@@ -1,4 +1,4 @@
-import { Table, TableColumnsType, TableProps, Button, Popconfirm } from "antd";
+import { Table, TableColumnsType, Button, Popconfirm, Tag } from "antd";
 import { useGetAllOrderByEmailQuery } from "../../redux/features/admin/orderApi"; // Use email-based query
 import { useUpdateOrderMutation } from "../../redux/features/admin/orderApi"; // Import the mutation for canceling order
 import { TProduct } from "../../types/products.types";
@@ -91,6 +91,26 @@ const ViewOrder = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      render: (status) => {
+        let color = "";
+        switch (status) {
+          case "Pending":
+            color = "orange";
+            break;
+          case "Processing":
+            color = "blue";
+            break;
+          case "Shipped":
+            color = "purple";
+            break;
+          case "Delivered":
+            color = "green";
+            break;
+          default:
+            color = "default";
+        }
+        return <Tag color={color}>{status}</Tag>;
+      },
       filters: [
         { text: "Pending", value: "Pending" },
         { text: "Processing", value: "Processing" },
@@ -130,12 +150,15 @@ const ViewOrder = () => {
   ];
 
   return (
+    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
     <Table<DataType>
       loading={isFetching}
       columns={columns}
       dataSource={localData} // Use localData for immediate updates
       rowKey="_id"
+      scroll={{ x: 1000 }} // Add horizontal scroll for responsiveness
     />
+  </div>
   );
 };
 
