@@ -28,7 +28,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({ onDelete }) => {
 
   return (
     <Space wrap>
-      <Button onClick={showDeleteConfirm} type="dashed">
+      <Button onClick={showDeleteConfirm} type="primary" style={{backgroundColor: 'red'}}>
         Delete
       </Button>
     </Space>

@@ -150,7 +150,7 @@ const AllProducts = () => {
                     borderRadius: '8px'
                   }}
                   preview={false}
-                  src={i?.image || "https://via.placeholder.com/250"}
+                  src={i?.image || "https://res.cloudinary.com/dfvgxf4dc/image/upload/v1738506391/skeleton-rigind-motorbike_1415-115_sfkmgs.avif"}
                   alt={i?.name}
                 />
 

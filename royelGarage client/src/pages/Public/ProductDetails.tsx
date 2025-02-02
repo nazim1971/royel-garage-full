@@ -50,7 +50,7 @@ const ProductDetails = () => {
         <Row gutter={[24, 24]} >
           <Col xs={24} md={12}  lg={12}>
             <img
-              src={productData?.image || "https://via.placeholder.com/400"}
+              src={productData?.image || "https://res.cloudinary.com/dfvgxf4dc/image/upload/v1738506391/skeleton-rigind-motorbike_1415-115_sfkmgs.avif"}
               alt={productData?.name}
               style={{
                 width: "100%",

@@ -1,18 +1,21 @@
-import { Col, Layout, Row } from "antd";
+import { Layout } from "antd";
 import Sidebar from "./Sidebar";
-import { Content, Footer,  } from "antd/es/layout/layout";
+import { Content,   } from "antd/es/layout/layout";
 import {  Outlet } from "react-router";
 import AppHeader from "./AppHeader";
 import AppFooter from "./AppFooter";
+import { useState } from "react";
 
 const MainLayout = () => {
 
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sidebar />
+      <Sidebar visible={sidebarVisible} setVisible={setSidebarVisible} />
       <Layout>
 
-        <AppHeader/>
+        <AppHeader setSidebarVisible={setSidebarVisible} />
         <Content style={{ margin: "24px 16px 0" }}>
           <div
             style={{

@@ -1,26 +1,30 @@
-import React, { useState } from "react";
+import React from "react";
 import { Layout, Button, Image, Flex } from "antd";
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
-import { logout } from "../../redux/features/auth/authSlice";
-import {  MenuOutlined } from "@ant-design/icons"; // Import MenuOutlined for the hamburger icon
-import { NavLink } from "react-router";
-// Correct import for NavLink
+import { logout, TUser } from "../../redux/features/auth/authSlice";
+import { NavLink, useNavigate } from "react-router";
+import { verifyToken } from "../../utils/verifyToken";
 
 const { Header } = Layout;
 
-const AppHeader: React.FC = () => {
+const AppHeader: React.FC<{ setSidebarVisible: (visible: boolean) => void }> = ({ setSidebarVisible }) => {
   const dispatch = useAppDispatch();
-  const token = useAppSelector((state) => state.auth.token);
-  const [visible, setVisible] = useState(false); // State to control the sidebar visibility
+  const token = useAppSelector((state) => state.auth.token) as string
+  const decodeT = verifyToken(token) as TUser
+  const navigate = useNavigate();
+
+  const handleDashboardClick = async() => {
+   
+    navigate(`/${decodeT?.role}`); // Navigate to the dashboard
+     setSidebarVisible(true); // Open the sidebar
+  };
+
 
   const handleLogout = () => {
     dispatch(logout());
   };
 
-  // Toggle the sidebar
-  const toggleSidebar = () => {
-    setVisible(!visible);
-  };
+
 
   return (
     <Header style={{ backgroundColor: "#001529", padding: 0 }}>
@@ -37,26 +41,35 @@ const AppHeader: React.FC = () => {
             />
           </NavLink>
 
-          {/* Hamburger Icon */}
-          <Button
-            className="hamburger-icon"
-            type="text"
-            style={{ color: "#fff", fontSize: "20px" }}
-            icon={<MenuOutlined />}
-            onClick={toggleSidebar} // Toggle sidebar on click
-          />
+          {/* Navigation Links */}
+          <NavLink to="/">
+            <Button type="link" style={{ color: "#fff", fontSize: "16px" }}>
+              Home
+            </Button>
+          </NavLink>
+          <NavLink to="/about">
+            <Button type="link" style={{ color: "#fff", fontSize: "16px" }}>
+              About
+            </Button>
+          </NavLink>
+          <NavLink to="/all-products">
+            <Button type="link" style={{ color: "#fff", fontSize: "16px" }}>
+              All Products
+            </Button>
+          </NavLink>
+          {
+            token &&  <Button type="link" style={{ color: "#fff", fontSize: "16px" }} onClick={handleDashboardClick}>
+            Dashboard
+          </Button>
+          }
         </Flex>
 
         {/* Auth Section */}
         <Flex align="center" gap={20}>
           {token ? (
-            <Button
-              style={{ color: "#000", fontSize: "16px", backgroundColor: "white" }}
-              type="text"
-              onClick={handleLogout}
-            >
-              Logout
-            </Button>
+           <Button  style={{ color: "#000", fontSize: "16px", backgroundColor: 'white' }}  type="text" onClick={handleLogout}>
+           Logout
+         </Button>
           ) : (
             <Flex gap={10}>
               <Button
